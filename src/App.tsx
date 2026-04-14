@@ -1,0 +1,62 @@
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import Login from './components/screens/Login';
+import Profile from './components/screens/Profile';
+import Ranking from './components/screens/Ranking';
+import Journey from './components/screens/Journey';
+import Exercises from './components/screens/Exercises';
+import Store from './components/screens/Store';
+import Settings from './components/screens/Settings';
+import TopBar from './components/TopBar';
+import BottomNav, { ScreenType } from './components/BottomNav';
+
+export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [activeScreen, setActiveScreen] = useState<ScreenType>('journey');
+
+  if (!isLoggedIn) {
+    return <Login onLogin={() => setIsLoggedIn(true)} />;
+  }
+
+  const renderScreen = () => {
+    switch (activeScreen) {
+      case 'journey':
+        return <Journey />;
+      case 'exercises':
+        return <Exercises />;
+      case 'ranking':
+        return <Ranking />;
+      case 'store':
+        return <Store />;
+      case 'profile':
+        return <Profile onSettingsClick={() => setActiveScreen('settings')} />;
+      case 'settings':
+        return <Settings onLogout={() => setIsLoggedIn(false)} />;
+      default:
+        return <Journey />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <TopBar />
+      
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeScreen}
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -10 }}
+          transition={{ duration: 0.2 }}
+        >
+          {renderScreen()}
+        </motion.div>
+      </AnimatePresence>
+
+      <BottomNav 
+        activeScreen={activeScreen} 
+        onScreenChange={(screen) => setActiveScreen(screen)} 
+      />
+    </div>
+  );
+}
