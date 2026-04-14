@@ -1,7 +1,7 @@
 import { Map, BookOpen, Trophy, ShoppingBag, User } from 'lucide-react';
 import { motion } from 'motion/react';
 
-export type ScreenType = 'journey' | 'exercises' | 'ranking' | 'store' | 'profile' | 'settings';
+export type ScreenType = 'journey' | 'exercises' | 'ranking' | 'store' | 'profile' | 'settings' | 'lesson';
 
 interface BottomNavProps {
   activeScreen: ScreenType;

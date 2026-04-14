@@ -1,7 +1,10 @@
 import { Calculator, SpellCheck, Star, GraduationCap } from 'lucide-react';
 import { motion } from 'motion/react';
+interface ExercisesProps {
+  onStartLesson?: () => void;
+}
 
-export default function Exercises() {
+export default function Exercises({ onStartLesson }: ExercisesProps) {
   const subjects = [
     {
       id: 'math',
@@ -64,7 +67,10 @@ export default function Exercises() {
                   style={{ width: `${subject.progress}%` }}
                 ></div>
               </div>
-              <button className={`w-full bg-gradient-to-br ${subject.color === 'primary' ? 'from-primary to-primary-container shadow-primary/20' : 'from-tertiary to-tertiary-container shadow-tertiary/20'} text-white py-4 rounded-lg font-bold active:scale-95 transition-all shadow-lg`}>
+              <button 
+                onClick={subject.id === 'portuguese' ? onStartLesson : undefined}
+                className={`w-full bg-gradient-to-br ${subject.color === 'primary' ? 'from-primary to-primary-container shadow-primary/20' : 'from-tertiary to-tertiary-container shadow-tertiary/20'} text-white py-4 rounded-lg font-bold active:scale-95 transition-all shadow-lg`}
+              >
                 Praticar Agora
               </button>
             </div>

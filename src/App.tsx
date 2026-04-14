@@ -10,6 +10,7 @@ import Store from './components/screens/Store';
 import Settings from './components/screens/Settings';
 import TopBar from './components/TopBar';
 import BottomNav, { ScreenType } from './components/BottomNav';
+import Lesson from './components/screens/Lesson';
 
 export default function App() {
   const [session, setSession] = useState<any>(null);
@@ -42,7 +43,9 @@ export default function App() {
       case 'journey':
         return <Journey />;
       case 'exercises':
-        return <Exercises />;
+        return <Exercises onStartLesson={() => setActiveScreen('lesson')} />;
+      case 'lesson':
+        return <Lesson onBack={() => setActiveScreen('exercises')} />;
       case 'ranking':
         return <Ranking userName={userName} avatarUrl={avatarUrl} />;
       case 'store':
@@ -72,10 +75,12 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
 
-      <BottomNav 
-        activeScreen={activeScreen} 
-        onScreenChange={(screen) => setActiveScreen(screen)} 
-      />
+      {activeScreen !== 'lesson' && (
+        <BottomNav 
+          activeScreen={activeScreen} 
+          onScreenChange={(screen) => setActiveScreen(screen)} 
+        />
+      )}
     </div>
   );
 }
