@@ -1,11 +1,44 @@
 import { User, Lock, Eye, Chrome, Grid } from 'lucide-react';
 import { motion } from 'motion/react';
+import React, { useState } from 'react';
+import { supabase } from '../../lib/supabase';
 
-interface LoginProps {
-  onLogin: () => void;
-}
+export default function Login() {
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorText, setErrorText] = useState('');
+  const [message, setMessage] = useState('');
 
-export default function Login({ onLogin }: LoginProps) {
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorText('');
+    setMessage('');
+
+    try {
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error) throw error;
+        setMessage('Verifique seu e-mail para confirmar a conta! Você já pode fazer login se for automático.');
+      }
+    } catch (error: any) {
+      setErrorText(error.message || 'Ocorreu um erro.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
       {/* Floating Decorative Elements */}
@@ -24,8 +57,7 @@ export default function Login({ onLogin }: LoginProps) {
             <img 
               alt="Aprenda+ Logo" 
               className="relative w-64 md:w-80 object-contain drop-shadow-[0_12px_40px_rgba(0,46,82,0.1)]" 
-              src="https://lh3.googleusercontent.com/aida/ADBb0ujxw34yM-zoAxHj6BSe_KZlPwK6__KnQVqdBQ23w2Ehvvzf7ZwPPORZ-A-KlEOSpRMT65CxBaSanZCNOLL6ir1qkYWOOacCTfNDuW-t9Z44L_JvOZItICYyEizIK6ybAgBe-6ch6zY_h6RvOedoShnZyHRKwt-8-75P2bqI15ctLJciWPlAj8virhS_sEfqR6jK5Vo3KYPKWFe0rsePxtG0MzfsDNZefmVs2imLQWQZqFMFKZ91Nb46Z5mwOoXKsR7Z16KAGTusi2E" 
-              referrerPolicy="no-referrer"
+              src="/logo.png" 
             />
           </motion.div>
         </header>
@@ -36,20 +68,27 @@ export default function Login({ onLogin }: LoginProps) {
           transition={{ delay: 0.2 }}
           className="w-full bg-white rounded-lg p-8 shadow-[0_12px_32px_rgba(0,46,82,0.06)] space-y-6"
         >
-          <div className="space-y-2">
-            <h2 className="text-2xl font-headline font-bold text-on-surface">Bem-vindo de volta!</h2>
-            <p className="text-on-surface-variant text-sm font-body">Entre para continuar sua jornada de conhecimento.</p>
+          <div className="space-y-2 text-center">
+            <h2 className="text-2xl font-headline font-bold text-on-surface">
+              {isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta!'}
+            </h2>
+            <p className="text-on-surface-variant text-sm font-body">
+              {isLogin ? 'Entre para continuar sua jornada de conhecimento.' : 'Comece sua jornada de conhecimento agora.'}
+            </p>
           </div>
 
-          <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onLogin(); }}>
+          <form className="space-y-5" onSubmit={handleAuth}>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider ml-1">E-mail ou Usuário</label>
+              <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider ml-1">E-mail</label>
               <div className="relative group">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors" />
                 <input 
                   className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-4 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none" 
                   placeholder="nome@exemplo.com" 
-                  type="text"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -57,7 +96,7 @@ export default function Login({ onLogin }: LoginProps) {
             <div className="space-y-1.5">
               <div className="flex justify-between items-center px-1">
                 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Senha</label>
-                <a className="text-xs font-bold text-primary hover:underline" href="#">Esqueceu?</a>
+                {isLogin && <a className="text-xs font-bold text-primary hover:underline" href="#">Esqueceu?</a>}
               </div>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors" />
@@ -65,6 +104,9 @@ export default function Login({ onLogin }: LoginProps) {
                   className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-12 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none" 
                   placeholder="••••••••" 
                   type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <button className="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-outline" type="button">
                   <Eye className="w-5 h-5" />
@@ -72,17 +114,21 @@ export default function Login({ onLogin }: LoginProps) {
               </div>
             </div>
 
+            {errorText && <p className="text-red-500 text-sm font-medium text-center">{errorText}</p>}
+            {message && <p className="text-green-600 text-sm font-medium text-center">{message}</p>}
+
             <button 
-              className="w-full py-4 rounded-lg bg-gradient-to-br from-primary to-primary-container text-white font-headline font-extrabold text-lg shadow-[0_8px_16px_rgba(0,94,160,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 mt-2" 
+              className="w-full py-4 rounded-lg bg-gradient-to-br from-primary to-primary-container text-white font-headline font-extrabold text-lg shadow-[0_8px_16px_rgba(0,94,160,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 mt-2 disabled:opacity-50" 
               type="submit"
+              disabled={loading}
             >
-              Entrar
+              {loading ? 'Carregando...' : isLogin ? 'Entrar' : 'Cadastrar'}
             </button>
           </form>
 
           <div className="relative flex items-center py-2">
             <div className="flex-grow border-t border-surface-variant"></div>
-            <span className="flex-shrink mx-4 text-outline-variant text-xs font-bold uppercase tracking-widest">ou entre com</span>
+            <span className="flex-shrink mx-4 text-outline-variant text-xs font-bold uppercase tracking-widest">ou {isLogin ? 'entre' : 'cadastre-se'} com</span>
             <div className="flex-grow border-t border-surface-variant"></div>
           </div>
 
@@ -100,8 +146,13 @@ export default function Login({ onLogin }: LoginProps) {
 
         <footer className="text-center pb-8">
           <p className="text-on-surface-variant font-body">
-            Ainda não tem uma conta? 
-            <a className="text-primary font-bold hover:text-primary-dim ml-1 transition-colors" href="#">Criar Conta</a>
+            {isLogin ? 'Ainda não tem uma conta?' : 'Já possui uma conta?'}
+            <button 
+              className="text-primary font-bold hover:text-primary-dim ml-1 transition-colors" 
+              onClick={() => setIsLogin(!isLogin)}
+            >
+              {isLogin ? 'Criar Conta' : 'Fazer Login'}
+            </button>
           </p>
         </footer>
       </main>

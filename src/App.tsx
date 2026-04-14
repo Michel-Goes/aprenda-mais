@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from './lib/supabase';
 import { AnimatePresence, motion } from 'motion/react';
 import Login from './components/screens/Login';
 import Profile from './components/screens/Profile';
@@ -11,11 +12,25 @@ import TopBar from './components/TopBar';
 import BottomNav, { ScreenType } from './components/BottomNav';
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [session, setSession] = useState<any>(null);
   const [activeScreen, setActiveScreen] = useState<ScreenType>('journey');
 
-  if (!isLoggedIn) {
-    return <Login onLogin={() => setIsLoggedIn(true)} />;
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (!session) {
+    return <Login />;
   }
 
   const renderScreen = () => {
@@ -31,7 +46,7 @@ export default function App() {
       case 'profile':
         return <Profile onSettingsClick={() => setActiveScreen('settings')} />;
       case 'settings':
-        return <Settings onLogout={() => setIsLoggedIn(false)} />;
+        return <Settings onLogout={() => supabase.auth.signOut()} />;
       default:
         return <Journey />;
     }
