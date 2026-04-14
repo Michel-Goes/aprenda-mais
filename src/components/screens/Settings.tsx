@@ -3,9 +3,10 @@ import { motion } from 'motion/react';
 
 interface SettingsProps {
   onLogout: () => void;
+  userName?: string;
 }
 
-export default function Settings({ onLogout }: SettingsProps) {
+export default function Settings({ onLogout, userName = 'Estudante' }: SettingsProps) {
   return (
     <main className="pt-24 px-6 pb-32 max-w-2xl mx-auto">
       <motion.section 
@@ -28,7 +29,7 @@ export default function Settings({ onLogout }: SettingsProps) {
           <div className="absolute -bottom-1 -right-1 bg-tertiary-container text-on-tertiary-container p-1 rounded-full text-[10px] font-bold shadow-sm">LVL 5</div>
         </div>
         <div>
-          <h3 className="text-xl font-bold text-on-surface">Lucas Oliveira</h3>
+          <h3 className="text-xl font-bold text-on-surface">{userName}</h3>
           <p className="text-sm text-on-surface-variant font-medium">Estudante desde Jan 2024</p>
         </div>
       </div>

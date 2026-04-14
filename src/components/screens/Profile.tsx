@@ -3,12 +3,13 @@ import { motion } from 'motion/react';
 
 interface ProfileProps {
   onSettingsClick: () => void;
+  userName?: string;
 }
 
-export default function Profile({ onSettingsClick }: ProfileProps) {
+export default function Profile({ onSettingsClick, userName = 'Estudante' }: ProfileProps) {
   return (
     <main className="pt-24 px-6 pb-32 max-w-2xl mx-auto">
-      <motion.section 
+      <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="relative mb-8"
@@ -16,10 +17,10 @@ export default function Profile({ onSettingsClick }: ProfileProps) {
         <div className="bg-white p-8 rounded-lg shadow-[0_12px_32px_rgba(0,46,82,0.06)] flex flex-col md:flex-row items-center gap-8 overflow-hidden">
           <div className="relative">
             <div className="w-32 h-32 rounded-xl bg-primary-container p-1 shadow-lg transform -rotate-3">
-              <img 
-                alt="Avatar" 
-                className="w-full h-full object-cover rounded-[1.5rem]" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdLiBNaD5v6FW638tfVjoJ_MmAQRsPWIliXcsqRYeqXE9VIKILXN-ZlQ03GEKQv6Nn9X-hJPMYQezreekPzKocIgtZJlTk-nidxRd873MzmAPPjQyBes23Q1VwYbblBT65CVEAmCBd1zct3WjZ70s1NTMYQZVTNzmkVFhmm-9cvOvBBflVFu5MQWnmMnNAB7zMtk6TSHDmQyZCuaSe05Nn82O4AbojsgrbsKgD5Lq9kj_vuJrBUH9uWt8_TidhasjafcBWsMbRECkF" 
+              <img
+                alt="Avatar"
+                className="w-full h-full object-cover rounded-[1.5rem]"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdLiBNaD5v6FW638tfVjoJ_MmAQRsPWIliXcsqRYeqXE9VIKILXN-ZlQ03GEKQv6Nn9X-hJPMYQezreekPzKocIgtZJlTk-nidxRd873MzmAPPjQyBes23Q1VwYbblBT65CVEAmCBd1zct3WjZ70s1NTMYQZVTNzmkVFhmm-9cvOvBBflVFu5MQWnmMnNAB7zMtk6TSHDmQyZCuaSe05Nn82O4AbojsgrbsKgD5Lq9kj_vuJrBUH9uWt8_TidhasjafcBWsMbRECkF"
                 referrerPolicy="no-referrer"
               />
             </div>
@@ -28,9 +29,9 @@ export default function Profile({ onSettingsClick }: ProfileProps) {
             </div>
           </div>
           <div className="flex-1 text-center md:text-left">
-            <h2 className="text-3xl font-headline font-extrabold tracking-tight text-on-surface mb-1">Lucas Silva</h2>
+            <h2 className="text-3xl font-headline font-extrabold tracking-tight text-on-surface mb-1">{userName}</h2>
             <p className="text-on-surface-variant font-medium mb-6">Pequeno Explorador Galático</p>
-            
+
             <div className="space-y-2">
               <div className="flex justify-between items-end mb-1">
                 <span className="text-xs font-bold font-label uppercase tracking-wider text-primary">Próximo Nível</span>
@@ -72,7 +73,7 @@ export default function Profile({ onSettingsClick }: ProfileProps) {
             { label: 'Explorador Espacial', icon: Award, color: 'bg-blue-100 text-blue-600' },
             { label: 'Primeiro Lugar', icon: Award, color: 'bg-green-100 text-green-600' },
           ].map((medal, i) => (
-            <motion.div 
+            <motion.div
               key={i}
               whileHover={{ scale: 1.05 }}
               className="bg-white p-4 rounded-lg shadow-[0_4px_12px_rgba(0,46,82,0.04)] flex flex-col items-center"
@@ -87,7 +88,7 @@ export default function Profile({ onSettingsClick }: ProfileProps) {
       </section>
 
       <section className="mt-12">
-        <button 
+        <button
           onClick={onSettingsClick}
           className="w-full bg-gradient-to-br from-primary to-primary-container text-white py-5 rounded-lg text-lg font-black font-headline shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3"
         >

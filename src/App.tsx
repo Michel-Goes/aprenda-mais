@@ -33,6 +33,9 @@ export default function App() {
     return <Login />;
   }
 
+  const userMetadata = session.user?.user_metadata || {};
+  const userName = userMetadata.full_name || 'Estudante';
+
   const renderScreen = () => {
     switch (activeScreen) {
       case 'journey':
@@ -40,13 +43,13 @@ export default function App() {
       case 'exercises':
         return <Exercises />;
       case 'ranking':
-        return <Ranking />;
+        return <Ranking userName={userName} />;
       case 'store':
         return <Store />;
       case 'profile':
-        return <Profile onSettingsClick={() => setActiveScreen('settings')} />;
+        return <Profile userName={userName} onSettingsClick={() => setActiveScreen('settings')} />;
       case 'settings':
-        return <Settings onLogout={() => supabase.auth.signOut()} />;
+        return <Settings userName={userName} onLogout={() => supabase.auth.signOut()} />;
       default:
         return <Journey />;
     }

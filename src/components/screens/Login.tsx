@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,6 +29,11 @@ export default function Login() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            data: {
+              full_name: name,
+            }
+          }
         });
         if (error) throw error;
         setMessage('Verifique seu e-mail para confirmar a conta! Você já pode fazer login se for automático.');
@@ -78,6 +84,23 @@ export default function Login() {
           </div>
 
           <form className="space-y-5" onSubmit={handleAuth}>
+            {!isLogin && (
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider ml-1">Nome Completo</label>
+                <div className="relative group">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors" />
+                  <input 
+                    className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-4 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none" 
+                    placeholder="Seu nome" 
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider ml-1">E-mail</label>
               <div className="relative group">
