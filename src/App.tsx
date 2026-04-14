@@ -35,6 +35,7 @@ export default function App() {
 
   const userMetadata = session.user?.user_metadata || {};
   const userName = userMetadata.full_name || 'Estudante';
+  const avatarUrl = userMetadata.avatar_url || null;
 
   const renderScreen = () => {
     switch (activeScreen) {
@@ -43,13 +44,13 @@ export default function App() {
       case 'exercises':
         return <Exercises />;
       case 'ranking':
-        return <Ranking userName={userName} />;
+        return <Ranking userName={userName} avatarUrl={avatarUrl} />;
       case 'store':
         return <Store />;
       case 'profile':
-        return <Profile userName={userName} onSettingsClick={() => setActiveScreen('settings')} />;
+        return <Profile userName={userName} avatarUrl={avatarUrl} onSettingsClick={() => setActiveScreen('settings')} />;
       case 'settings':
-        return <Settings userName={userName} onLogout={() => supabase.auth.signOut()} />;
+        return <Settings userName={userName} avatarUrl={avatarUrl} onLogout={() => supabase.auth.signOut()} />;
       default:
         return <Journey />;
     }

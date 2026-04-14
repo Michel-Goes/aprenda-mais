@@ -45,6 +45,26 @@ export default function Login() {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setErrorText('Por favor, digite seu e-mail para recuperar a senha.');
+      return;
+    }
+    setLoading(true);
+    setErrorText('');
+    setMessage('');
+    
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      if (error) throw error;
+      setMessage('E-mail de recuperação de senha enviado com sucesso! Verifique sua caixa de entrada.');
+    } catch (error: any) {
+      setErrorText(error.message || 'Ocorreu um erro ao enviar o e-mail de recuperação.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
       {/* Floating Decorative Elements */}
@@ -53,22 +73,22 @@ export default function Login() {
 
       <main className="w-full max-w-md space-y-8 flex flex-col items-center">
         <header className="text-center">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             className="relative inline-block"
           >
             <div className="absolute inset-0 bg-primary-container/10 blur-3xl rounded-full transform scale-150"></div>
-            <img 
-              alt="Aprenda+ Logo" 
-              className="relative w-64 md:w-80 object-contain drop-shadow-[0_12px_40px_rgba(0,46,82,0.1)]" 
-              src="/logo.png" 
+            <img
+              alt="Aprenda+ Logo"
+              className="relative w-64 md:w-80 object-contain drop-shadow-[0_12px_40px_rgba(0,46,82,0.1)]"
+              src="/logo.png"
             />
           </motion.div>
         </header>
 
-        <motion.section 
+        <motion.section
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2 }}
@@ -89,9 +109,9 @@ export default function Login() {
                 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider ml-1">Nome Completo</label>
                 <div className="relative group">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors" />
-                  <input 
-                    className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-4 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none" 
-                    placeholder="Seu nome" 
+                  <input
+                    className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-4 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none"
+                    placeholder="Seu nome"
                     type="text"
                     required
                     value={name}
@@ -105,9 +125,9 @@ export default function Login() {
               <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider ml-1">E-mail</label>
               <div className="relative group">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors" />
-                <input 
-                  className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-4 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none" 
-                  placeholder="nome@exemplo.com" 
+                <input
+                  className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-4 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none"
+                  placeholder="nome@exemplo.com"
                   type="email"
                   required
                   value={email}
@@ -119,13 +139,21 @@ export default function Login() {
             <div className="space-y-1.5">
               <div className="flex justify-between items-center px-1">
                 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Senha</label>
-                {isLogin && <a className="text-xs font-bold text-primary hover:underline" href="#">Esqueceu?</a>}
+                {isLogin && (
+                  <button 
+                    type="button" 
+                    onClick={handleForgotPassword}
+                    className="text-xs font-bold text-primary hover:underline transition-colors"
+                  >
+                    Esqueceu?
+                  </button>
+                )}
               </div>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors" />
-                <input 
-                  className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-12 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none" 
-                  placeholder="••••••••" 
+                <input
+                  className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-12 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none"
+                  placeholder="••••••••"
                   type="password"
                   required
                   value={password}
@@ -140,8 +168,8 @@ export default function Login() {
             {errorText && <p className="text-red-500 text-sm font-medium text-center">{errorText}</p>}
             {message && <p className="text-green-600 text-sm font-medium text-center">{message}</p>}
 
-            <button 
-              className="w-full py-4 rounded-lg bg-gradient-to-br from-primary to-primary-container text-white font-headline font-extrabold text-lg shadow-[0_8px_16px_rgba(0,94,160,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 mt-2 disabled:opacity-50" 
+            <button
+              className="w-full py-4 rounded-lg bg-gradient-to-br from-primary to-primary-container text-white font-headline font-extrabold text-lg shadow-[0_8px_16px_rgba(0,94,160,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 mt-2 disabled:opacity-50"
               type="submit"
               disabled={loading}
             >
@@ -170,8 +198,8 @@ export default function Login() {
         <footer className="text-center pb-8">
           <p className="text-on-surface-variant font-body">
             {isLogin ? 'Ainda não tem uma conta?' : 'Já possui uma conta?'}
-            <button 
-              className="text-primary font-bold hover:text-primary-dim ml-1 transition-colors" 
+            <button
+              className="text-primary font-bold hover:text-primary-dim ml-1 transition-colors"
               onClick={() => setIsLogin(!isLogin)}
             >
               {isLogin ? 'Criar Conta' : 'Fazer Login'}

@@ -1,12 +1,75 @@
-import { Star, Flame, Award, Settings, ChevronRight } from 'lucide-react';
+import { Star, Flame, Award, Settings, ChevronRight, Camera, User, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useState, useRef, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
 
 interface ProfileProps {
   onSettingsClick: () => void;
   userName?: string;
 }
 
-export default function Profile({ onSettingsClick, userName = 'Estudante' }: ProfileProps) {
+export default function Profile({ onSettingsClick, userName = 'Estudante', avatarUrl = null }: ProfileProps & { avatarUrl?: string | null }) {
+  const [avatarSrc, setAvatarSrc] = useState<string | null>(avatarUrl);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setAvatarSrc(avatarUrl);
+  }, [avatarUrl]);
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file);
+
+      if (uploadError) {
+        alert('Erro ao enviar imagem. Verifique se o bucket "avatars" existe e é público no Supabase.');
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      
+      await supabase.auth.updateUser({
+        data: { avatar_url: data.publicUrl }
+      });
+      
+      setAvatarSrc(data.publicUrl);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemovePhoto = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      setIsUploading(true);
+      await supabase.auth.updateUser({
+        data: { avatar_url: null }
+      });
+      setAvatarSrc(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <main className="pt-24 px-6 pb-32 max-w-2xl mx-auto">
       <motion.section
@@ -16,15 +79,50 @@ export default function Profile({ onSettingsClick, userName = 'Estudante' }: Pro
       >
         <div className="bg-white p-8 rounded-lg shadow-[0_12px_32px_rgba(0,46,82,0.06)] flex flex-col md:flex-row items-center gap-8 overflow-hidden">
           <div className="relative">
-            <div className="w-32 h-32 rounded-xl bg-primary-container p-1 shadow-lg transform -rotate-3">
-              <img
-                alt="Avatar"
-                className="w-full h-full object-cover rounded-[1.5rem]"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdLiBNaD5v6FW638tfVjoJ_MmAQRsPWIliXcsqRYeqXE9VIKILXN-ZlQ03GEKQv6Nn9X-hJPMYQezreekPzKocIgtZJlTk-nidxRd873MzmAPPjQyBes23Q1VwYbblBT65CVEAmCBd1zct3WjZ70s1NTMYQZVTNzmkVFhmm-9cvOvBBflVFu5MQWnmMnNAB7zMtk6TSHDmQyZCuaSe05Nn82O4AbojsgrbsKgD5Lq9kj_vuJrBUH9uWt8_TidhasjafcBWsMbRECkF"
-                referrerPolicy="no-referrer"
-              />
+            <div 
+              className="w-32 h-32 rounded-xl bg-primary-container p-1 shadow-lg transform -rotate-3 cursor-pointer group relative overflow-hidden flex items-center justify-center"
+              onClick={handleAvatarClick}
+            >
+              {avatarSrc ? (
+                <img 
+                  alt="Avatar" 
+                  className="w-full h-full object-cover rounded-[1.5rem]" 
+                  src={avatarSrc} 
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="w-full h-full bg-surface-variant flex items-center justify-center rounded-[1.5rem]">
+                  <User className="w-16 h-16 text-on-surface-variant/50" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-[1.5rem]">
+                {isUploading ? (
+                  <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  <Camera className="w-8 h-8 text-white" />
+                )}
+              </div>
             </div>
-            <div className="absolute -bottom-2 -right-2 bg-tertiary-container text-on-tertiary-container w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-md border-4 border-white">
+
+            {avatarSrc && (
+              <button 
+                onClick={handleRemovePhoto}
+                className="absolute -top-3 -right-3 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-md hover:bg-red-600 hover:scale-110 transition-all z-20"
+                title="Remover foto"
+                disabled={isUploading}
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileChange}  
+              className="hidden" 
+              accept="image/*"
+            />
+            <div className="absolute -bottom-2 -right-2 bg-tertiary-container text-on-tertiary-container w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-md border-4 border-white z-10">
               5
             </div>
           </div>

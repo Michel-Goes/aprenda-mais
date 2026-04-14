@@ -1,12 +1,13 @@
-import { Volume2, Bell, HelpCircle, Lock, LogOut, ChevronRight } from 'lucide-react';
+import { Volume2, Bell, HelpCircle, Lock, LogOut, ChevronRight, User } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface SettingsProps {
   onLogout: () => void;
   userName?: string;
+  avatarUrl?: string | null;
 }
 
-export default function Settings({ onLogout, userName = 'Estudante' }: SettingsProps) {
+export default function Settings({ onLogout, userName = 'Estudante', avatarUrl = null }: SettingsProps) {
   return (
     <main className="pt-24 px-6 pb-32 max-w-2xl mx-auto">
       <motion.section 
@@ -18,14 +19,15 @@ export default function Settings({ onLogout, userName = 'Estudante' }: SettingsP
         <p className="text-on-surface-variant">Personalize sua experiência de aprendizado</p>
       </motion.section>
 
-      <div className="bg-white p-6 rounded-lg mb-8 shadow-[0_12px_32px_rgba(0,46,82,0.06)] flex items-center gap-4">
+      <div className="bg-white p-6 rounded-lg mb-8 flex items-center shadow-[0_12px_32px_rgba(0,46,82,0.06)] gap-4">
         <div className="relative">
-          <img 
-            alt="User Profile" 
-            className="w-16 h-16 rounded-full object-cover border-4 border-primary-container" 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBK1JZZfaYkUEOTQbQFFggWlyybkjlpb5pQ8UfXZxLcnFIfLu05cm1M-gwoqIG87x6wzfCOTVBlA9VsvZCFD-2QVosOiyqFqdOMxceIPRca7SdjZEH1_7UC8RkHqvisrTT4PvVcBSXnRKo_5sX_66HskzPmplNAVPBQBJ79GzSylnnn9mQ3n7Aq4tuAFnYMFI4pBxNREkd4LI_E6-pcJl8wNuGBajfld3_ZcplEX6i6IMNlXx0vdtxbv5NSgZPE3tKrMJrMzzaWadoN" 
-            referrerPolicy="no-referrer"
-          />
+          {avatarUrl ? (
+            <img className="w-16 h-16 rounded-full object-cover border-2 border-primary-container" src={avatarUrl} alt="Avatar" />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-surface-variant flex items-center justify-center border-2 border-primary-container text-on-surface-variant">
+              <User className="w-8 h-8" />
+            </div>
+          )}
           <div className="absolute -bottom-1 -right-1 bg-tertiary-container text-on-tertiary-container p-1 rounded-full text-[10px] font-bold shadow-sm">LVL 5</div>
         </div>
         <div>
