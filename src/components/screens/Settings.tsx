@@ -24,8 +24,10 @@ export default function Settings({ onLogout, userName = 'Estudante', avatarUrl =
           {avatarUrl ? (
             <img className="w-16 h-16 rounded-full object-cover border-2 border-primary-container" src={avatarUrl} alt="Avatar" />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-surface-variant flex items-center justify-center border-2 border-primary-container text-on-surface-variant">
-              <User className="w-8 h-8" />
+            <div className="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center border-2 border-primary-container">
+              <span className="text-2xl font-headline font-bold text-white uppercase">
+                {userName.split(' ').map(n => n[0]).slice(0, 2).join('')}
+              </span>
             </div>
           )}
           <div className="absolute -bottom-1 -right-1 bg-tertiary-container text-on-tertiary-container p-1 rounded-full text-[10px] font-bold shadow-sm">LVL 5</div>

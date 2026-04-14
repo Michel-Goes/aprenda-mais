@@ -91,8 +91,10 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <div className="w-full h-full bg-surface-variant flex items-center justify-center rounded-[1.5rem]">
-                  <User className="w-16 h-16 text-on-surface-variant/50" />
+                <div className="w-full h-full bg-blue-500 flex items-center justify-center rounded-[1.5rem]">
+                  <span className="text-5xl font-headline font-bold text-white uppercase">
+                    {userName.split(' ').map(n => n[0]).slice(0, 2).join('')}
+                  </span>
                 </div>
               )}
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-[1.5rem]">
