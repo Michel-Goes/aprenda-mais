@@ -1,5 +1,6 @@
 import { Volume2, Bell, HelpCircle, Lock, LogOut, ChevronRight, User } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useState } from 'react';
 
 interface SettingsProps {
   onLogout: () => void;
@@ -8,6 +9,9 @@ interface SettingsProps {
 }
 
 export default function Settings({ onLogout, userName = 'Estudante', avatarUrl = null }: SettingsProps) {
+  const [somEnabled, setSomEnabled] = useState(true);
+  const [notificacoesEnabled, setNotificacoesEnabled] = useState(true);
+
   return (
     <main className="pt-24 px-6 pb-32 max-w-2xl mx-auto">
       <motion.section 
@@ -34,7 +38,7 @@ export default function Settings({ onLogout, userName = 'Estudante', avatarUrl =
         </div>
         <div>
           <h3 className="text-xl font-bold text-on-surface">{userName}</h3>
-          <p className="text-sm text-on-surface-variant font-medium">Estudante desde Jan 2024</p>
+          {/* <p className="text-sm text-on-surface-variant font-medium">Estudante desde Jan 2024</p> */}
         </div>
       </div>
 
@@ -48,8 +52,8 @@ export default function Settings({ onLogout, userName = 'Estudante', avatarUrl =
               <span className="font-bold text-on-surface">Som</span>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input checked className="sr-only peer" type="checkbox" readOnly />
-              <div className="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              <input checked={somEnabled} onChange={() => setSomEnabled(!somEnabled)} className="sr-only peer" type="checkbox" />
+              <div className="w-11 h-6 bg-black peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
             </label>
           </div>
 
@@ -61,8 +65,8 @@ export default function Settings({ onLogout, userName = 'Estudante', avatarUrl =
               <span className="font-bold text-on-surface">Notificações</span>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input checked className="sr-only peer" type="checkbox" readOnly />
-              <div className="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
+              <input checked={notificacoesEnabled} onChange={() => setNotificacoesEnabled(!notificacoesEnabled)} className="sr-only peer" type="checkbox" />
+              <div className="w-11 h-6 bg-black peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
             </label>
           </div>
         </div>
@@ -102,7 +106,7 @@ export default function Settings({ onLogout, userName = 'Estudante', avatarUrl =
       </div>
 
       <div className="mt-12 text-center">
-        <p className="text-xs font-bold text-outline uppercase tracking-widest">Aprenda+ v2.4.0</p>
+        <p className="text-xs font-bold text-outline uppercase tracking-widest">Aprenda+ v1.0</p>
         <div className="mt-4 flex justify-center gap-2">
           <div className="w-2 h-2 rounded-full bg-primary-container"></div>
           <div className="w-2 h-2 rounded-full bg-tertiary-container"></div>

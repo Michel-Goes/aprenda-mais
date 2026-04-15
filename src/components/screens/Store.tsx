@@ -1,7 +1,9 @@
 import { ShoppingBag, Star, Lock } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useState } from 'react';
 
 export default function Store() {
+  const [activeCategory, setActiveCategory] = useState('Tudo');
   const categories = ['Tudo', 'Avatares', 'Roupas', 'Power-ups'];
   const items = [
     {
@@ -10,6 +12,7 @@ export default function Store() {
       description: 'Dobre sua experiência em todas as lições por 1 hora.',
       price: 150,
       tag: 'Especial',
+      category: 'Power-ups',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCBzN7VbNY26955Rkz7U7Zf5GsBeE7W1U5e54sIiGJ8vi8UVir5tkLWHmtlDXT-IJBbo3zRr6fVTI9qWwgjkq0vB8uMD0meX1oOTBNgT9rN6ymrBokRyXs_o7FCFWC6AgSxkhr76F5TvLiFMEWpjZ7RYv0w8jqEZnyTbIZZajH4LTkMxbJWHox9D_H5bJ4LO1xbn5lL5wVQ08LeJkmNYpOV8GuzRvtSmaEvPx7_aiwqzUtZuNhZjOWOuj9LBBLuZtkMth3FEXFHxQWj',
     },
     {
@@ -17,6 +20,7 @@ export default function Store() {
       name: 'Astro-Explorador',
       description: 'Um avatar lendário para os mestres da ciência e astronomia.',
       price: 500,
+      category: 'Avatares',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBRfXn3wQiNNpR2BImEJEMrl7vOzAKogVEsY8XbDdSEKj7bCsHwrnfkEB67EtlcjeaGvOT0r8wdQ5cBF5gSSX5ymumysfNJL1idaaAYQ_MJdKY4o8LSm22_LHSgtdcrZ6TSK_0tDkN1vrWjaAn5DA53hKaC8qin63HL7oXd_eCXj0bRzp-v5pcxwm_Xip6RlLvWlFF3Nhhk1Wok4PYTyXPl_B4eJJpYaiQgzdJcFaSF38_83SAf-zNU-5qLfzzDXngeLRXAeXNOG4CQ',
     },
     {
@@ -24,6 +28,7 @@ export default function Store() {
       name: 'Jaqueta Universitária',
       description: 'Mantenha seu avatar estiloso com esta jaqueta premium.',
       price: 220,
+      category: 'Roupas',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAzl11RQUUb5J1d6vG9UaVdp2mB4TT2BPouRsgLG_TaS_gxfpYNYbvLPQIIeuRVa0CF-YltRLpxLZqt2MDmKnpeKZW8rc3QXUJXdak0MjGhGwMz0pp158ksJM4P6fs1PVcF3kmGbt4bXjJGqViQ6PtujyjWV5Y8w93wK0zzRn2DR_ZBxTCMpCt9nV4O11QOIfl323_oQg2iUcDQzJxqk69dZpUOYMpwgCSHqxkLtSLFTeKntBWe5O1K89qllZVLdk6NUo-qXeghDF1i',
     },
     {
@@ -31,6 +36,7 @@ export default function Store() {
       name: 'Parada no Tempo',
       description: 'Garante 30 segundos extras em qualquer desafio cronometrado.',
       price: 75,
+      category: 'Power-ups',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBiGRLtXcZeU_pyaNZZhSlFu107-PLZIsJvLAxCsKg9Fewuj0bXiIJQiQtxpcxsUnRJvEdB9MRh8_hzR4ryHQdotbtR29vtH9OUvDQoa-bY-O89qzhZSqibTaZPGLAdJ5ZVLzkxzkQPet22bTXJSwh7FAESRRlFqKykyOVLb2bS6YlnQlxnGCRCmTZXwg5_SfRYyiyh-zt0LX4wqodQ_hGcbwK7kMTSYkk4-W08Ag5S6d5eQwW7K-gHGm9DXekSVCOUOMOmlbYB0B-4',
     },
     {
@@ -38,6 +44,7 @@ export default function Store() {
       name: 'Gato Cibernético',
       description: 'Um companheiro robótico que te segue em todas as jornadas.',
       price: 1200,
+      category: 'Avatares',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDuKRCZKkMKDBaJoL606oDax-D-2yba5CYeCef3B8vEivXNP-Mbgrpsx48md7QO3TGReDJQmGgpn83lug_EcI0iFdYsaCow0lDFF8OGGpUq62Q81ba_SmwZknVo3dMhr0QIHImW1P9IjcxTkpvIYjFvMbYhJGn777gJ7dN8kxRG4AO2VYoiC8ZdoAFaPBZ-aHEefBO4gcvJX7YY4d9ZYmXdv97YAY5jtk-xp2KMSXAnulzOpEn2j8fs0i12WGQtVWkNo8mx6eATYCKl',
     },
     {
@@ -46,9 +53,13 @@ export default function Store() {
       description: 'Apenas para os maiores sábios da nossa comunidade.',
       price: 2500,
       locked: true,
+      category: 'Roupas',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAiTfRa8g3Ms8R8HSupXwJsm_tU-w7iFqLCWrWqPILPKYxBFDIl7DLbdFr0uE0id7-NqmGZltOA9zi0BMANwsEYrNNS658rScgfPZiNvwofNEFEr6ssO1M-Z0irpeNVAFRCa4991ofMbITWpqUP4ujx_vJctCSI1bWh6u3oxD6IU0RLIdhIFOMEwyuEjIpDoGSze1tMql6WUoRxr_bogdfKCQx0MYDubmLk62L_sfYaSbRSLmg5IxV-ErXYs-fB4uMaonx_1yKUEob0',
     },
   ];
+
+  const filteredItems = activeCategory === 'Tudo' ? items : items.filter(item => item.category === activeCategory);
+
 
   return (
     <main className="pt-24 pb-32 px-6 max-w-5xl mx-auto">
@@ -73,11 +84,12 @@ export default function Store() {
       </motion.section>
 
       <nav className="flex gap-3 mb-8 overflow-x-auto pb-2 scrollbar-hide">
-        {categories.map((cat, i) => (
+        {categories.map((cat) => (
           <button 
             key={cat}
+            onClick={() => setActiveCategory(cat)}
             className={`px-6 py-2.5 rounded-full font-bold whitespace-nowrap transition-all ${
-              i === 0 ? 'bg-blue-700 text-white shadow-lg' : 'bg-white text-on-surface-variant hover:bg-surface-container-low'
+              activeCategory === cat ? 'bg-blue-700 text-white shadow-lg' : 'bg-white text-on-surface-variant hover:bg-surface-container-low'
             }`}
           >
             {cat}
@@ -86,7 +98,7 @@ export default function Store() {
       </nav>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {items.map((item, i) => (
+        {filteredItems.map((item, i) => (
           <motion.div 
             key={item.id}
             initial={{ opacity: 0, scale: 0.9 }}
