@@ -4,19 +4,161 @@ import { Lightbulb, Check, ArrowRight, X, Trophy, Target } from 'lucide-react';
 
 interface LessonProps {
   onBack?: () => void;
+  subject: 'math' | 'portuguese';
 }
 
 interface Challenge {
   module: string;
   question: string;
   hint: string;
-  image: string;
+  image?: string;
   options: { id: string; text: string }[];
   correctAnswer: string;
   explanation: string;
 }
 
-export default function Lesson({ onBack }: LessonProps) {
+const portugueseChallenges: Challenge[] = [
+  {
+    module: 'Módulo: Português',
+    question: 'Qual é a forma correta de escrever o plural de lápis?',
+    hint: 'A palavra não muda no plural.',
+    image: 'https://images.pexels.com/photos/21225/pexels-photo.jpg?w=600&h=600&fit=crop',
+    options: [
+      { id: 'A', text: 'Lápises' },
+      { id: 'B', text: 'Lápis' },
+      { id: 'C', text: 'Lapises' },
+      { id: 'D', text: 'Lápiz' },
+    ],
+    correctAnswer: 'B',
+    explanation: 'O plural de lápis continua lápis, pois é substantivo terminado em -s com acento. O plural não muda a palavra.',
+  },
+  {
+    module: 'Módulo: Português',
+    question: 'Qual é o sujeito da frase: “O aluno revisou a lição”?',
+    hint: 'O sujeito é quem pratica a ação.',
+    image: 'https://images.pexels.com/photos/4559558/pexels-photo-4559558.jpeg?w=600&h=600&fit=crop',
+    options: [
+      { id: 'A', text: 'Revisou' },
+      { id: 'B', text: 'A lição' },
+      { id: 'C', text: 'O aluno' },
+      { id: 'D', text: 'A ação' },
+    ],
+    correctAnswer: 'C',
+    explanation: '“O aluno” é o sujeito, porque ele pratica a ação de revisar. “Revisou” é o verbo e “a lição” é o objeto direto.',
+  },
+  {
+    module: 'Módulo: Português',
+    question: 'Qual alternativa usa corretamente a crase?',
+    hint: 'A crase aparece antes de palavra feminina quando há a fusão de duas vogais iguais.',
+    image: 'https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?w=600&h=600&fit=crop',
+    options: [
+      { id: 'A', text: 'Vou à escola todos os dias.' },
+      { id: 'B', text: 'Vou a escola todos os dias.' },
+      { id: 'C', text: 'Vou há escola todos os dias.' },
+      { id: 'D', text: 'Vou as escola todos os dias.' },
+    ],
+    correctAnswer: 'A',
+    explanation: 'A forma correta é “à escola” porque indica direção e o substantivo é feminino. A crase mostra a fusão de “a” + “a”.',
+  },
+  {
+    module: 'Módulo: Português',
+    question: 'Qual é a palavra sinônima de “feliz”?',
+    hint: 'Pense em um adjetivo que significa alegria.',
+    image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?w=600&h=600&fit=crop',
+    options: [
+      { id: 'A', text: 'Triste' },
+      { id: 'B', text: 'Sábio' },
+      { id: 'C', text: 'Alegre' },
+      { id: 'D', text: 'Calmo' },
+    ],
+    correctAnswer: 'C',
+    explanation: '“Alegre” é sinônimo de “feliz”. As outras opções têm sentidos diferentes.',
+  },
+  {
+    module: 'Módulo: Português',
+    question: 'Complete: “Ela _____ ao cinema ontem.”',
+    hint: 'Use o verbo no passado.',
+    image: 'https://images.pexels.com/photos/207983/pexels-photo-207983.jpeg?w=600&h=600&fit=crop',
+    options: [
+      { id: 'A', text: 'vou' },
+      { id: 'B', text: 'foi' },
+      { id: 'C', text: 'vai' },
+      { id: 'D', text: 'iria' },
+    ],
+    correctAnswer: 'B',
+    explanation: 'A frase pede o passado: “Ela foi ao cinema ontem.” As outras formas não são pretérito perfeito do indicativo.',
+  },
+];
+
+const mathChallenges: Challenge[] = [
+  {
+    module: 'Módulo: Matemática',
+    question: 'Quanto é 3x + 5x?',
+    hint: 'Some os termos semelhantes.',
+    options: [
+      { id: 'A', text: '8x' },
+      { id: 'B', text: '15x' },
+      { id: 'C', text: '2x' },
+      { id: 'D', text: '9x' },
+    ],
+    correctAnswer: 'A',
+    explanation: 'Somando 3x com 5x temos 8x, pois são termos semelhantes que se somam.',
+  },
+  {
+    module: 'Módulo: Matemática',
+    question: 'Quanto é 45 ÷ 9?',
+    hint: 'Pense em quantas vezes o 9 cabe em 45.',
+    options: [
+      { id: 'A', text: '4' },
+      { id: 'B', text: '5' },
+      { id: 'C', text: '6' },
+      { id: 'D', text: '7' },
+    ],
+    correctAnswer: 'B',
+    explanation: '9 cabe 5 vezes em 45, então 45 ÷ 9 = 5.',
+  },
+  {
+    module: 'Módulo: Matemática',
+    question: 'Qual é a área de um triângulo com base 5 e altura 4?',
+    hint: 'Use a fórmula: base × altura ÷ 2.',
+    options: [
+      { id: 'A', text: '20' },
+      { id: 'B', text: '10' },
+      { id: 'C', text: '9' },
+      { id: 'D', text: '12' },
+    ],
+    correctAnswer: 'B',
+    explanation: 'Área = 5 × 4 ÷ 2 = 10. Portanto a resposta correta é 10.',
+  },
+  {
+    module: 'Módulo: Matemática',
+    question: 'Resolva: 2x - 3 = 11',
+    hint: 'Some 3 em ambos os lados e depois divida por 2.',
+    options: [
+      { id: 'A', text: '7' },
+      { id: 'B', text: '8' },
+      { id: 'C', text: '5' },
+      { id: 'D', text: '10' },
+    ],
+    correctAnswer: 'A',
+    explanation: 'Somando 3 a ambos os lados, 2x = 14. Então x = 7.',
+  },
+  {
+    module: 'Módulo: Matemática',
+    question: 'Quanto é 25% de 200?',
+    hint: '25% é 1/4 do total.',
+    options: [
+      { id: 'A', text: '25' },
+      { id: 'B', text: '40' },
+      { id: 'C', text: '50' },
+      { id: 'D', text: '75' },
+    ],
+    correctAnswer: 'C',
+    explanation: '25% de 200 é 200 ÷ 4 = 50.',
+  },
+];
+
+export default function Lesson({ onBack, subject }: LessonProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -24,78 +166,7 @@ export default function Lesson({ onBack }: LessonProps) {
   const [score, setScore] = useState(0);
   const [showFinalScreen, setShowFinalScreen] = useState(false);
 
-  const challenges: Challenge[] = [
-    {
-      module: 'Módulo 1: Natureza',
-      question: 'Qual é o coletivo de lobos?',
-      hint: 'É um termo também usado para designar bandos familiares.',
-      image: '/wolf.png',
-      options: [
-        { id: 'A', text: 'Pillars' },
-        { id: 'B', text: 'Alcateia' },
-        { id: 'C', text: 'Cardume' },
-        { id: 'D', text: 'Vara' },
-      ],
-      correctAnswer: 'B',
-      explanation: 'Alcateia é o termo correto para designar um grupo de lobos. A palavra também é usada para descrever bandos familiares de animais selvagens.',
-    },
-    {
-      module: 'Módulo 1: Natureza',
-      question: 'Qual é o coletivo de peixes?',
-      hint: 'A resposta é algo que flui junto na água.',
-      image: 'https://images.pexels.com/photos/14267347/pexels-photo-14267347.jpeg?w=600&h=600&fit=crop',
-      options: [
-        { id: 'A', text: 'Rebanho' },
-        { id: 'B', text: 'Cardume' },
-        { id: 'C', text: 'Ninhada' },
-        { id: 'D', text: 'Colmeia' },
-      ],
-      correctAnswer: 'B',
-      explanation: 'Cardume é o coletivo de peixes. Você viu um cardume em "Alcateia"? Era uma opção incorreta naquela questão!',
-    },
-    {
-      module: 'Módulo 1: Natureza',
-      question: 'Qual é o coletivo de pássaros em voo?',
-      hint: 'É uma palavra que rimaria com "oada".',
-      image: 'https://images.pexels.com/photos/2498736/pexels-photo-2498736.jpeg?w=600&h=600&fit=crop',
-      options: [
-        { id: 'A', text: 'Nuvem' },
-        { id: 'B', text: 'Bando' },
-        { id: 'C', text: 'Revoada' },
-        { id: 'D', text: 'Enxame' },
-      ],
-      correctAnswer: 'C',
-      explanation: 'Revoada é o termo usado para descrever pássaros em voo. Um bando é mais geral, enquanto revoada é específico para esse movimento.',
-    },
-    {
-      module: 'Módulo 1: Natureza',
-      question: 'Qual é o coletivo de abelhas?',
-      hint: 'É um termo relacionado à organização das abelhas.',
-      image: 'https://images.pexels.com/photos/26610221/pexels-photo-26610221.jpeg?w=600&h=600&fit=crop',
-      options: [
-        { id: 'A', text: 'Enxame' },
-        { id: 'B', text: 'Colmeia' },
-        { id: 'C', text: 'Ninhada' },
-        { id: 'D', text: 'Rebanho' },
-      ],
-      correctAnswer: 'A',
-      explanation: 'Enxame é o coletivo de abelhas em movimento. Colmeia é o local onde vivem, mas não é o termo para o grupo.',
-    },
-    {
-      module: 'Módulo 1: Natureza',
-      question: 'Qual é o coletivo de vacas?',
-      hint: 'É um termo muito comum na zona rural.',
-      image: 'https://images.pexels.com/photos/8637749/pexels-photo-8637749.jpeg?w=600&h=600&fit=crop',
-      options: [
-        { id: 'A', text: 'Alcateia' },
-        { id: 'B', text: 'Cardume' },
-        { id: 'C', text: 'Rebanho' },
-        { id: 'D', text: 'Colmeia' },
-      ],
-      correctAnswer: 'C',
-      explanation: 'Rebanho é o coletivo de animais domesticados, como vacas, ovelhas e cabras. É muito usado na pecuária.',
-    },
-  ];
+  const challenges: Challenge[] = subject === 'math' ? mathChallenges : portugueseChallenges;
 
   const challenge = challenges[currentChallengeIndex];
 
@@ -122,6 +193,7 @@ export default function Lesson({ onBack }: LessonProps) {
   };
 
   const progressPercentage = ((currentChallengeIndex + 1) / challenges.length) * 100;
+  const subjectLabel = subject === 'math' ? 'Matemática' : 'Português';
 
   if (showFinalScreen) {
     const percentage = (score / challenges.length) * 100;
@@ -143,12 +215,10 @@ export default function Lesson({ onBack }: LessonProps) {
               transition={{ duration: 2, repeat: Infinity }}
               className="mb-8 flex justify-center"
             >
-              <div className={`w-24 h-24 rounded-full flex items-center justify-center shadow-lg ${
-                isExcellent ? 'bg-[#fbbf24]' : isGood ? 'bg-[#60a5fa]' : 'bg-[#f87171]'
-              }`}>
-                <Trophy className={`w-12 h-12 ${
-                  isExcellent ? 'text-yellow-700' : isGood ? 'text-blue-700' : 'text-red-700'
-                }`} />
+              <div className={`w-24 h-24 rounded-full flex items-center justify-center shadow-lg ${isExcellent ? 'bg-[#fbbf24]' : isGood ? 'bg-[#60a5fa]' : 'bg-[#f87171]'
+                }`}>
+                <Trophy className={`w-12 h-12 ${isExcellent ? 'text-yellow-700' : isGood ? 'text-blue-700' : 'text-red-700'
+                  }`} />
               </div>
             </motion.div>
 
@@ -169,9 +239,8 @@ export default function Lesson({ onBack }: LessonProps) {
                     initial={{ width: 0 }}
                     animate={{ width: `${percentage}%` }}
                     transition={{ duration: 1, delay: 0.2 }}
-                    className={`h-full rounded-full ${
-                      isExcellent ? 'bg-[#10b981]' : isGood ? 'bg-[#4CA5FE]' : 'bg-[#f97316]'
-                    }`}
+                    className={`h-full rounded-full ${isExcellent ? 'bg-[#10b981]' : isGood ? 'bg-[#4CA5FE]' : 'bg-[#f97316]'
+                      }`}
                   ></motion.div>
                 </div>
               </div>
@@ -182,29 +251,27 @@ export default function Lesson({ onBack }: LessonProps) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className={`rounded-[1.5rem] p-8 mb-8 border-2 ${
-                isExcellent 
-                  ? 'bg-[#ecfdf5] border-[#10b981]' 
-                  : isGood 
+              className={`rounded-[1.5rem] p-8 mb-8 border-2 ${isExcellent
+                ? 'bg-[#ecfdf5] border-[#10b981]'
+                : isGood
                   ? 'bg-[#eff6ff] border-[#4CA5FE]'
                   : 'bg-[#fef2f2] border-[#ef4444]'
-              }`}
+                }`}
             >
-              <h2 className={`text-[1.8rem] font-headline font-extrabold mb-3 ${
-                isExcellent 
-                  ? 'text-[#10b981]' 
-                  : isGood 
+              <h2 className={`text-[1.8rem] font-headline font-extrabold mb-3 ${isExcellent
+                ? 'text-[#10b981]'
+                : isGood
                   ? 'text-[#4CA5FE]'
                   : 'text-[#ef4444]'
-              }`}>
+                }`}>
                 {isExcellent ? '🎉 Excelente!' : isGood ? '👏 Muito bom!' : '💪 Bom esforço!'}
               </h2>
               <p className="text-[15px] leading-relaxed text-[#334155]">
-                {isExcellent 
-                  ? 'Parabéns! Você é um mestre em coletivos! Sua performance foi impecável.'
-                  : isGood 
-                  ? 'Parabéns! Você tem um ótimo conhecimento sobre coletivos de animais!'
-                  : 'Continue praticando! Você já conhece alguns coletivos. Tente novamente para melhorar!'}
+                {isExcellent
+                  ? `Parabéns! Você arrasou em ${subjectLabel}! Sua performance foi impecável.`
+                  : isGood
+                    ? `Parabéns! Você tem um ótimo conhecimento em ${subjectLabel}!`
+                    : `Continue praticando em ${subjectLabel}! Você já sabe bastante, mas pode melhorar ainda mais.`}
               </p>
             </motion.div>
 
@@ -249,7 +316,7 @@ export default function Lesson({ onBack }: LessonProps) {
     );
   }
 
-  const challenge = challenges[currentChallengeIndex];
+  return (
     <main className="min-h-screen pt-24 pb-48 px-6 bg-[#fafcff]">
       <div className="max-w-md mx-auto relative">
         {/* Progress Bar centered */}
@@ -265,19 +332,20 @@ export default function Lesson({ onBack }: LessonProps) {
           </p>
         </div>
 
-        {/* Wolf Image */}
-        <motion.div
-          key={currentChallengeIndex}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full aspect-square rounded-[2rem] overflow-hidden relative shadow-[0_12px_40px_rgba(0,0,0,0.08)] mb-8"
-        >
-          <img
-            src={challenge.image}
-            alt="Challenge"
-            className="w-full h-full object-cover"
-          />
-        </motion.div>
+        {challenge.image && (
+          <motion.div
+            key={currentChallengeIndex}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full aspect-square rounded-[2rem] overflow-hidden relative shadow-[0_12px_40px_rgba(0,0,0,0.08)] mb-8"
+          >
+            <img
+              src={challenge.image}
+              alt="Challenge"
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
+        )}
 
         {/* Content Section */}
         <div className="w-full flex flex-col justify-between">
