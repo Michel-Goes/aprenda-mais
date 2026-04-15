@@ -1,7 +1,7 @@
 import { Map, BookOpen, Trophy, ShoppingBag, User } from 'lucide-react';
 import { motion } from 'motion/react';
 
-export type ScreenType = 'journey' | 'exercises' | 'ranking' | 'store' | 'profile' | 'settings' | 'lesson';
+export type ScreenType = 'journey' | 'exercises' | 'ranking' | 'store' | 'profile' | 'settings' | 'lesson' | 'help' | 'privacy';
 
 interface BottomNavProps {
   activeScreen: ScreenType;
@@ -20,7 +20,7 @@ export default function BottomNav({ activeScreen, onScreenChange }: BottomNavPro
   return (
     <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/70 backdrop-blur-md rounded-t-[2rem] shadow-[0_-8px_24px_rgba(0,46,82,0.08)]">
       {navItems.map((item) => {
-        const isActive = activeScreen === item.id || (item.id === 'profile' && activeScreen === 'settings');
+        const isActive = activeScreen === item.id || (item.id === 'profile' && ['settings', 'help', 'privacy'].includes(activeScreen));
         const Icon = item.icon;
 
         return (

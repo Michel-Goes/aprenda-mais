@@ -4,11 +4,12 @@ import { useState } from 'react';
 
 interface SettingsProps {
   onLogout: () => void;
+  onNavigate: (screen: 'help' | 'privacy') => void;
   userName?: string;
   avatarUrl?: string | null;
 }
 
-export default function Settings({ onLogout, userName = 'Estudante', avatarUrl = null }: SettingsProps) {
+export default function Settings({ onLogout, onNavigate, userName = 'Estudante', avatarUrl = null }: SettingsProps) {
   const [somEnabled, setSomEnabled] = useState(true);
   const [notificacoesEnabled, setNotificacoesEnabled] = useState(true);
 
@@ -72,7 +73,7 @@ export default function Settings({ onLogout, userName = 'Estudante', avatarUrl =
         </div>
 
         <div className="bg-white p-2 rounded-lg shadow-[0_12px_32px_rgba(0,46,82,0.06)]">
-          <button className="w-full flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors rounded-lg">
+          <button onClick={() => onNavigate('help')} className="w-full flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors rounded-lg">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
                 <HelpCircle className="w-5 h-5" />
@@ -81,7 +82,7 @@ export default function Settings({ onLogout, userName = 'Estudante', avatarUrl =
             </div>
             <ChevronRight className="w-5 h-5 text-outline" />
           </button>
-          <button className="w-full flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors rounded-lg">
+          <button onClick={() => onNavigate('privacy')} className="w-full flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors rounded-lg">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
                 <Lock className="w-5 h-5" />

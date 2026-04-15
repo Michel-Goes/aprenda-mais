@@ -11,6 +11,8 @@ import Settings from './components/screens/Settings';
 import TopBar from './components/TopBar';
 import BottomNav, { ScreenType } from './components/BottomNav';
 import Lesson from './components/screens/Lesson';
+import Help from './components/screens/Help';
+import Privacy from './components/screens/Privacy';
 
 export default function App() {
   const [session, setSession] = useState<any>(null);
@@ -53,7 +55,11 @@ export default function App() {
       case 'profile':
         return <Profile userName={userName} avatarUrl={avatarUrl} onSettingsClick={() => setActiveScreen('settings')} />;
       case 'settings':
-        return <Settings userName={userName} avatarUrl={avatarUrl} onLogout={() => supabase.auth.signOut()} />;
+        return <Settings userName={userName} avatarUrl={avatarUrl} onLogout={() => supabase.auth.signOut()} onNavigate={(screen) => setActiveScreen(screen as ScreenType)} />;
+      case 'help':
+        return <Help onBack={() => setActiveScreen('settings')} />;
+      case 'privacy':
+        return <Privacy onBack={() => setActiveScreen('settings')} />;
       default:
         return <Journey />;
     }
