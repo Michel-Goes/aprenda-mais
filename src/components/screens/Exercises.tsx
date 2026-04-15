@@ -1,7 +1,7 @@
 import { Calculator, SpellCheck, Star, GraduationCap } from 'lucide-react';
 import { motion } from 'motion/react';
 interface ExercisesProps {
-  onStartLesson?: () => void;
+  onStartLesson?: (subject: 'math' | 'portuguese') => void;
 }
 
 export default function Exercises({ onStartLesson }: ExercisesProps) {
@@ -26,7 +26,7 @@ export default function Exercises({ onStartLesson }: ExercisesProps) {
 
   return (
     <main className="pt-24 pb-32 px-6 max-w-2xl mx-auto">
-      <motion.section 
+      <motion.section
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="mb-10 relative overflow-hidden bg-primary-container rounded-lg p-8 text-on-primary-container"
@@ -42,7 +42,7 @@ export default function Exercises({ onStartLesson }: ExercisesProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {subjects.map((subject, i) => (
-          <motion.div 
+          <motion.div
             key={subject.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -62,13 +62,13 @@ export default function Exercises({ onStartLesson }: ExercisesProps) {
                 <span className={subject.color === 'primary' ? 'text-primary' : 'text-tertiary'}>{subject.progress}%</span>
               </div>
               <div className="h-3 w-full bg-surface-variant rounded-full overflow-hidden relative">
-                <div 
+                <div
                   className={`h-full bg-gradient-to-r ${subject.color === 'primary' ? 'from-primary to-primary-container' : 'from-tertiary to-tertiary-container'} rounded-full`}
                   style={{ width: `${subject.progress}%` }}
                 ></div>
               </div>
-              <button 
-                onClick={subject.id === 'portuguese' ? onStartLesson : undefined}
+              <button
+                onClick={() => onStartLesson?.(subject.id as 'math' | 'portuguese')}
                 className={`w-full bg-gradient-to-br ${subject.color === 'primary' ? 'from-primary to-primary-container shadow-primary/20' : 'from-tertiary to-tertiary-container shadow-tertiary/20'} text-white py-4 rounded-lg font-bold active:scale-95 transition-all shadow-lg`}
               >
                 Praticar Agora

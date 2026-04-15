@@ -1,4 +1,4 @@
-import { User, Lock, Eye, Chrome, Grid } from 'lucide-react';
+import { User, Lock, Eye, EyeOff, Chrome, Grid } from 'lucide-react';
 import { motion } from 'motion/react';
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
@@ -8,6 +8,7 @@ export default function Login() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorText, setErrorText] = useState('');
   const [message, setMessage] = useState('');
@@ -53,7 +54,7 @@ export default function Login() {
     setLoading(true);
     setErrorText('');
     setMessage('');
-    
+
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email);
       if (error) throw error;
@@ -63,6 +64,10 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible((prev) => !prev);
   };
 
   return (
@@ -140,8 +145,8 @@ export default function Login() {
               <div className="flex justify-between items-center px-1">
                 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Senha</label>
                 {isLogin && (
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={handleForgotPassword}
                     className="text-xs font-bold text-primary hover:underline transition-colors"
                   >
@@ -149,18 +154,25 @@ export default function Login() {
                   </button>
                 )}
               </div>
-              <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors" />
-                <input
-                  className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-12 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none"
-                  placeholder="••••••••"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button className="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-outline" type="button">
-                  <Eye className="w-5 h-5" />
+              <div className="flex gap-2">
+                <div className="relative group flex-1">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors" />
+                  <input
+                    className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-4 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none"
+                    placeholder="••••••••"
+                    type={isPasswordVisible ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+                <button
+                  className="px-4 py-4 bg-surface-container-low hover:bg-surface-variant rounded-DEFAULT transition-colors flex items-center justify-center min-w-[50px]"
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  aria-label={isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha'}
+                >
+                  {isPasswordVisible ? <EyeOff className="w-5 h-5 text-outline-variant" /> : <Eye className="w-5 h-5 text-outline-variant" />}
                 </button>
               </div>
             </div>

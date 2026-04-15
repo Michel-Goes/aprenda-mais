@@ -17,6 +17,7 @@ import Privacy from './components/screens/Privacy';
 export default function App() {
   const [session, setSession] = useState<any>(null);
   const [activeScreen, setActiveScreen] = useState<ScreenType>('journey');
+  const [lessonSubject, setLessonSubject] = useState<'math' | 'portuguese'>('portuguese');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -32,6 +33,12 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (session) {
+      setActiveScreen('journey');
+    }
+  }, [session]);
+
   if (!session) {
     return <Login />;
   }
@@ -45,9 +52,16 @@ export default function App() {
       case 'journey':
         return <Journey />;
       case 'exercises':
-        return <Exercises onStartLesson={() => setActiveScreen('lesson')} />;
+        return (
+          <Exercises
+            onStartLesson={(subject) => {
+              setLessonSubject(subject);
+              setActiveScreen('lesson');
+            }}
+          />
+        );
       case 'lesson':
-        return <Lesson onBack={() => setActiveScreen('exercises')} />;
+        return <Lesson subject={lessonSubject} onBack={() => setActiveScreen('exercises')} />;
       case 'ranking':
         return <Ranking userName={userName} avatarUrl={avatarUrl} />;
       case 'store':
@@ -68,7 +82,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-background">
       <TopBar />
-      
+
       <AnimatePresence mode="wait">
         <motion.div
           key={activeScreen}
@@ -82,9 +96,9 @@ export default function App() {
       </AnimatePresence>
 
       {activeScreen !== 'lesson' && (
-        <BottomNav 
-          activeScreen={activeScreen} 
-          onScreenChange={(screen) => setActiveScreen(screen)} 
+        <BottomNav
+          activeScreen={activeScreen}
+          onScreenChange={(screen) => setActiveScreen(screen)}
         />
       )}
     </div>
