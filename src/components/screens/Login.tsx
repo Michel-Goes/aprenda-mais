@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 
 export default function Login() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [view, setView] = useState<'login' | 'signup' | 'forgot_password'>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,14 +20,14 @@ export default function Login() {
     setMessage('');
 
     try {
-      if (isLogin) {
+      if (view === 'login') {
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) throw error;
-      } else {
-        const { error } = await supabase.auth.signUp({
+      } else if (view === 'signup') {
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -37,38 +37,59 @@ export default function Login() {
           }
         });
         if (error) throw error;
-        setMessage('Verifique seu e-mail para confirmar a conta! Você já pode fazer login se for automático.');
+
+        // O Supabase oculta o erro de "E-mail já existente" por segurança (Prevenção de Enumeração),
+        // mas ele retorna um array de "identities" vazio nos casos em que o e-mail já existia.
+        if (data?.user && data.user.identities && data.user.identities.length === 0) {
+          setErrorText('Este e-mail já está cadastrado. Tente fazer login ou recupere a senha.');
+          setLoading(false);
+          return;
+        }
+
+        setMessage('Verifique seu e-mail para confirmar a conta!');
+      } else if (view === 'forgot_password') {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin
+        });
+        if (error) throw error;
+        setMessage('E-mail de recuperação enviado! Verifique sua caixa de entrada.');
       }
     } catch (error: any) {
-      setErrorText(error.message || 'Ocorreu um erro.');
+      let errorMessage = error.message || 'Ocorreu um erro.';
+      
+      // Tradução de erros comuns do Supabase
+      if (errorMessage.includes('email rate limit exceeded')) {
+        errorMessage = 'Muitas tentativas de envio. Por favor, aguarde um pouco e tente novamente.';
+      } else if (errorMessage.includes('Invalid login credentials')) {
+        errorMessage = 'E-mail ou senha incorretos.';
+      } else if (errorMessage.includes('User already registered')) {
+        errorMessage = 'Este e-mail já está cadastrado.';
+      } else if (errorMessage.includes('Password should be at least')) {
+        errorMessage = 'A senha deve ter pelo menos 6 caracteres.';
+      }
+
+      setErrorText(errorMessage);
     } finally {
       setLoading(false);
     }
   };
-
-  const handleForgotPassword = async () => {
-    if (!email) {
-      setErrorText('Por favor, digite seu e-mail para recuperar a senha.');
-      return;
-    }
-    setLoading(true);
-    setErrorText('');
-    setMessage('');
-
+  const handleOAuthSignIn = async (provider: 'google' | 'azure') => {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      setLoading(true);
+      setErrorText('');
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
       if (error) throw error;
-      setMessage('E-mail de recuperação de senha enviado com sucesso! Verifique sua caixa de entrada.');
     } catch (error: any) {
-      setErrorText(error.message || 'Ocorreu um erro ao enviar o e-mail de recuperação.');
-    } finally {
+      setErrorText(error.message || `Erro ao conectar com ${provider === 'azure' ? 'Microsoft' : 'Google'}.`);
       setLoading(false);
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible((prev) => !prev);
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
@@ -101,15 +122,19 @@ export default function Login() {
         >
           <div className="space-y-2 text-center">
             <h2 className="text-2xl font-headline font-bold text-on-surface">
-              {isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta!'}
+              {view === 'login' && 'Bem-vindo de volta!'}
+              {view === 'signup' && 'Crie sua conta!'}
+              {view === 'forgot_password' && 'Recuperar Senha'}
             </h2>
             <p className="text-on-surface-variant text-sm font-body">
-              {isLogin ? 'Entre para continuar sua jornada de conhecimento.' : 'Comece sua jornada de conhecimento agora.'}
+              {view === 'login' && 'Entre para continuar sua jornada de conhecimento.'}
+              {view === 'signup' && 'Comece sua jornada de conhecimento agora.'}
+              {view === 'forgot_password' && 'Digite seu e-mail para receber um link de recuperação.'}
             </p>
           </div>
 
           <form className="space-y-5" onSubmit={handleAuth}>
-            {!isLogin && (
+            {view === 'signup' && (
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider ml-1">Nome Completo</label>
                 <div className="relative group">
@@ -141,41 +166,45 @@ export default function Login() {
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <div className="flex justify-between items-center px-1">
-                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Senha</label>
-                {isLogin && (
-                  <button
-                    type="button"
-                    onClick={handleForgotPassword}
-                    className="text-xs font-bold text-primary hover:underline transition-colors"
-                  >
-                    Esqueceu?
-                  </button>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <div className="relative group flex-1">
+            {view !== 'forgot_password' && (
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center px-1">
+                  <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Senha</label>
+                  {view === 'login' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setView('forgot_password');
+                        setErrorText('');
+                        setMessage('');
+                      }}
+                      className="text-xs font-bold text-primary hover:underline transition-colors"
+                    >
+                      Esqueceu?
+                    </button>
+                  )}
+                </div>
+                <div className="relative group">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors" />
                   <input
-                    className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-4 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none"
+                    className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-12 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none"
                     placeholder="••••••••"
                     type={isPasswordVisible ? 'text' : 'password'}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  <button
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-outline"
+                    type="button"
+                    onClick={() => setIsPasswordVisible((prev) => !prev)}
+                    aria-label={isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha'}
+                  >
+                    {isPasswordVisible ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
                 </div>
-                <button
-                  className="px-4 py-4 bg-surface-container-low hover:bg-surface-variant rounded-DEFAULT transition-colors flex items-center justify-center min-w-[50px]"
-                  type="button"
-                  onClick={togglePasswordVisibility}
-                  aria-label={isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha'}
-                >
-                  {isPasswordVisible ? <EyeOff className="w-5 h-5 text-outline-variant" /> : <Eye className="w-5 h-5 text-outline-variant" />}
-                </button>
               </div>
-            </div>
+            )}
 
             {errorText && <p className="text-red-500 text-sm font-medium text-center">{errorText}</p>}
             {message && <p className="text-green-600 text-sm font-medium text-center">{message}</p>}
@@ -185,36 +214,56 @@ export default function Login() {
               type="submit"
               disabled={loading}
             >
-              {loading ? 'Carregando...' : isLogin ? 'Entrar' : 'Cadastrar'}
+              {loading ? 'Carregando...' : view === 'login' ? 'Entrar' : view === 'signup' ? 'Cadastrar' : 'Enviar Link'}
             </button>
           </form>
 
-          <div className="relative flex items-center py-2">
-            <div className="flex-grow border-t border-surface-variant"></div>
-            <span className="flex-shrink mx-4 text-outline-variant text-xs font-bold uppercase tracking-widest">ou {isLogin ? 'entre' : 'cadastre-se'} com</span>
-            <div className="flex-grow border-t border-surface-variant"></div>
-          </div>
+          {view !== 'forgot_password' && (
+            <>
+              <div className="relative flex items-center py-2">
+                <div className="flex-grow border-t border-surface-variant"></div>
+                <span className="flex-shrink mx-4 text-outline-variant text-xs font-bold uppercase tracking-widest">ou {view === 'login' ? 'entre' : 'cadastre-se'} com</span>
+                <div className="flex-grow border-t border-surface-variant"></div>
+              </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <button className="flex items-center justify-center gap-2 py-3 rounded-lg bg-surface-container-low hover:bg-surface-variant transition-colors group">
-              <Chrome className="w-5 h-5 text-on-surface-variant group-hover:scale-110 transition-transform" />
-              <span className="text-sm font-bold text-on-surface-variant">Google</span>
-            </button>
-            <button className="flex items-center justify-center gap-2 py-3 rounded-lg bg-surface-container-low hover:bg-surface-variant transition-colors group">
-              <Grid className="w-5 h-5 text-on-surface-variant group-hover:scale-110 transition-transform" />
-              <span className="text-sm font-bold text-on-surface-variant">Microsoft</span>
-            </button>
-          </div>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => handleOAuthSignIn('google')}
+                  disabled={loading}
+                  className="flex items-center justify-center gap-2 py-3 rounded-lg bg-surface-container-low hover:bg-surface-variant transition-colors group disabled:opacity-50"
+                >
+                  <Chrome className="w-5 h-5 text-on-surface-variant group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-bold text-on-surface-variant">Google</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOAuthSignIn('azure')}
+                  disabled={loading}
+                  className="flex items-center justify-center gap-2 py-3 rounded-lg bg-surface-container-low hover:bg-surface-variant transition-colors group disabled:opacity-50"
+                >
+                  <Grid className="w-5 h-5 text-on-surface-variant group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-bold text-on-surface-variant">Microsoft</span>
+                </button>
+              </div>
+            </>
+          )}
         </motion.section>
 
         <footer className="text-center pb-8">
-          <p className="text-on-surface-variant font-body">
-            {isLogin ? 'Ainda não tem uma conta?' : 'Já possui uma conta?'}
+          <p className="text-on-surface-variant font-body mb-2">
+            {view === 'login' && 'Ainda não tem uma conta?'}
+            {view === 'signup' && 'Já possui uma conta?'}
+            {view === 'forgot_password' && 'Lembrou sua senha?'}
             <button
               className="text-primary font-bold hover:text-primary-dim ml-1 transition-colors"
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                setView(view === 'login' ? 'signup' : 'login');
+                setErrorText('');
+                setMessage('');
+              }}
             >
-              {isLogin ? 'Criar Conta' : 'Fazer Login'}
+              {view === 'login' ? 'Criar Conta' : 'Fazer Login'}
             </button>
           </p>
         </footer>

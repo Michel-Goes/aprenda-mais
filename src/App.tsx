@@ -13,35 +13,61 @@ import BottomNav, { ScreenType } from './components/BottomNav';
 import Lesson from './components/screens/Lesson';
 import Help from './components/screens/Help';
 import Privacy from './components/screens/Privacy';
+import UpdatePassword from './components/screens/UpdatePassword';
 
 export default function App() {
   const [session, setSession] = useState<any>(null);
   const [activeScreen, setActiveScreen] = useState<ScreenType>('journey');
   const [lessonSubject, setLessonSubject] = useState<'math' | 'portuguese'>('portuguese');
+  const [isRecoveringPassword, setIsRecoveringPassword] = useState(() => {
+    // Detect recovery from URL immediately on mount
+    return typeof window !== 'undefined' && window.location.hash.includes('type=recovery');
+  });
+  const [isLoadingSession, setIsLoadingSession] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      setIsLoadingSession(false);
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
+      if (event === 'PASSWORD_RECOVERY' || window.location.hash.includes('type=recovery')) {
+        setIsRecoveringPassword(true);
+      }
+      setIsLoadingSession(false);
     });
+
+    // Remova o hash da URL para limpar a exibição (opcional, recomendado)
+    if (window.location.hash.includes('type=recovery')) {
+        window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+    }
 
     return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
-    if (session) {
+    if (session && !isRecoveringPassword) {
       setActiveScreen('journey');
     }
-  }, [session]);
+  }, [session, isRecoveringPassword]);
+
+  if (isLoadingSession) {
+    return <div className="min-h-screen bg-background flex items-center justify-center text-primary font-headline">Carregando...</div>;
+  }
+
+  // A tela de recuperação tem prioridade se estiver ativa, não importa a sessão
+  if (isRecoveringPassword) {
+    return <UpdatePassword onPasswordUpdated={() => setIsRecoveringPassword(false)} />;
+  }
 
   if (!session) {
     return <Login />;
   }
+
 
   const userMetadata = session.user?.user_metadata || {};
   const userName = userMetadata.full_name || 'Estudante';
