@@ -71,7 +71,7 @@ export default function App() {
 
   const userMetadata = session.user?.user_metadata || {};
   const userName = userMetadata.full_name || 'Estudante';
-  const avatarUrl = userMetadata.avatar_url || null;
+  const avatarUrl = userMetadata.custom_avatar_url || null;
 
   const renderScreen = () => {
     switch (activeScreen) {

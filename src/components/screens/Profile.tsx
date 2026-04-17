@@ -1,4 +1,4 @@
-import { Star, Flame, Award, Settings, ChevronRight, Camera, User, Trash2, X } from 'lucide-react';
+import { Star, Flame, Award, Settings, ChevronRight, Camera, User, Trash2, X, Edit2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useState, useRef, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
@@ -12,7 +12,19 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
   const [avatarSrc, setAvatarSrc] = useState<string | null>(avatarUrl);
   const [isUploading, setIsUploading] = useState(false);
   const [showAllMedals, setShowAllMedals] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const allMedalsList = [
     { label: 'Mestre da Leitura', icon: Star, color: 'bg-yellow-100 text-yellow-600' },
@@ -30,7 +42,8 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
     setAvatarSrc(avatarUrl);
   }, [avatarUrl]);
 
-  const handleAvatarClick = () => {
+  const handleUploadOptionClick = () => {
+    setIsDropdownOpen(false);
     fileInputRef.current?.click();
   };
 
@@ -54,7 +67,7 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
       const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
       
       await supabase.auth.updateUser({
-        data: { avatar_url: data.publicUrl }
+        data: { custom_avatar_url: data.publicUrl }
       });
       
       setAvatarSrc(data.publicUrl);
@@ -65,12 +78,13 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
     }
   };
 
-  const handleRemovePhoto = async (e: React.MouseEvent) => {
+  const handleRemoveOptionClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    setIsDropdownOpen(false);
     try {
       setIsUploading(true);
       await supabase.auth.updateUser({
-        data: { avatar_url: null }
+        data: { custom_avatar_url: null }
       });
       setAvatarSrc(null);
       if (fileInputRef.current) {
@@ -91,10 +105,9 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
         className="relative mb-8"
       >
         <div className="bg-white p-8 rounded-lg shadow-[0_12px_32px_rgba(0,46,82,0.06)] flex flex-col md:flex-row items-center gap-8 overflow-hidden">
-          <div className="relative">
+          <div className="relative" ref={dropdownRef}>
             <div 
-              className="w-32 h-32 rounded-xl bg-primary-container p-1 shadow-lg transform -rotate-3 cursor-pointer group relative overflow-hidden flex items-center justify-center"
-              onClick={handleAvatarClick}
+              className="w-32 h-32 rounded-xl bg-primary-container p-1 shadow-lg transform -rotate-3 relative overflow-hidden flex items-center justify-center"
             >
               {avatarSrc ? (
                 <img 
@@ -110,25 +123,41 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
                   </span>
                 </div>
               )}
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-[1.5rem]">
-                {isUploading ? (
+              {isUploading && (
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-[1.5rem]">
                   <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
-                ) : (
-                  <Camera className="w-8 h-8 text-white" />
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
-            {avatarSrc && (
+            <div className="absolute -bottom-2 -left-2 z-20">
               <button 
-                onClick={handleRemovePhoto}
-                className="absolute -top-3 -right-3 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-md hover:bg-red-600 hover:scale-110 transition-all z-20"
-                title="Remover foto"
-                disabled={isUploading}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex items-center gap-1.5 bg-white border border-surface-variant shadow-sm rounded-full px-3 py-1.5 text-sm font-medium text-on-surface hover:bg-surface-container-lowest transition-colors"
               >
-                <Trash2 className="w-4 h-4" />
+                <Edit2 className="w-4 h-4" />
+                Editar
               </button>
-            )}
+
+              {isDropdownOpen && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-surface-variant rounded-lg shadow-lg py-1 flex flex-col z-30">
+                  <button 
+                    onClick={handleUploadOptionClick}
+                    className="text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low hover:text-primary transition-colors"
+                  >
+                    Anexar foto
+                  </button>
+                  {avatarSrc && (
+                    <button 
+                      onClick={handleRemoveOptionClick}
+                      className="text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+                    >
+                      Remover foto
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
 
             <input 
               type="file" 
@@ -137,7 +166,7 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
               className="hidden" 
               accept="image/*"
             />
-            <div className="absolute -bottom-2 -right-2 bg-tertiary-container text-on-tertiary-container w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-md border-4 border-white z-10">
+            <div className="absolute -bottom-2 -right-2 bg-tertiary-container text-on-tertiary-container w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-md border-4 border-white z-10 cursor-default">
               5
             </div>
           </div>

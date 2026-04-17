@@ -48,6 +48,28 @@ export default function Login() {
 
         setMessage('Verifique seu e-mail para confirmar a conta!');
       } else if (view === 'forgot_password') {
+        
+        // Tentativa de contornar a segurança do Supabase com uma função Customizada do Banco de Dados
+        try {
+          const { data: emailExists, error: rpcError } = await supabase.rpc('check_email_exists', { email_to_check: email });
+          
+          if (rpcError) {
+             setErrorText('Erro interno: Função SQL pendente. Execute o script enviado pelo assistente no seu Supabase > SQL Editor.');
+             setLoading(false);
+             return;
+          }
+
+          if (emailExists === false) {
+            setErrorText('E-mail não cadastrado. Crie e inicie sua jornada agora!');
+            setLoading(false);
+            return;
+          }
+        } catch (e) {
+             setErrorText('Erro interno: RPC inalcançável.');
+             setLoading(false);
+             return;
+        }
+
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: window.location.origin
         });
@@ -59,13 +81,15 @@ export default function Login() {
       
       // Tradução de erros comuns do Supabase
       if (errorMessage.includes('email rate limit exceeded')) {
-        errorMessage = 'Muitas tentativas de envio. Por favor, aguarde um pouco e tente novamente.';
+        errorMessage = 'Muitas tentativas. Por favor, aguarde um pouco e tente novamente.';
       } else if (errorMessage.includes('Invalid login credentials')) {
         errorMessage = 'E-mail ou senha incorretos.';
       } else if (errorMessage.includes('User already registered')) {
         errorMessage = 'Este e-mail já está cadastrado.';
       } else if (errorMessage.includes('Password should be at least')) {
         errorMessage = 'A senha deve ter pelo menos 6 caracteres.';
+      } else if (errorMessage.includes('User not found') || errorMessage.includes('not found')) {
+        errorMessage = 'Este e-mail não consta em nosso banco de dados.';
       }
 
       setErrorText(errorMessage);
