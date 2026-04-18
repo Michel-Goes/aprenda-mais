@@ -13,6 +13,17 @@ export default function Login() {
   const [errorText, setErrorText] = useState('');
   const [message, setMessage] = useState('');
 
+  // Verifica se a URL retornou um erro do Supabase (ex: link expirado por clique-duplo)
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash;
+      if (hash.includes('error=access_denied') || hash.includes('error_code=otp_expired')) {
+        setErrorText('Este link de e-mail expirou ou já foi utilizado. Por segurança, os links servem para um único clique. Caso esteja tentando redefinir a senha, por favor, solicite um novo link abaixo.');
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    }
+  }, []);
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
