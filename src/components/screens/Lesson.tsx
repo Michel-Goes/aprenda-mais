@@ -75,18 +75,18 @@ const portugueseChallenges: Challenge[] = [
     explanation: 'A palavra deriva de "caixa" (com x), portanto a maneira correta de grafá-la é encaixotar.',
   },
   {
-    module: 'Módulo 4: Ditados',
-    question: 'Complete o ditado: "Água mole em pedra dura..."',
-    hint: 'Indica que a força da persistência vence obstáculos difíceis.',
+    module: 'Módulo 5: Literatura',
+    question: 'Na frase "A gota d\'água dançava sobre a pedra", qual figura de linguagem foi utilizada?',
+    hint: 'Essa figura de linguagem atribui ações ou sentimentos humanos a seres inanimados.',
     image: '/img/agua-pedra.jpg',
     options: [
-      { id: 'A', text: '...não faz a menor fissura.' },
-      { id: 'B', text: '...tanto bate até que fura.' },
-      { id: 'C', text: '...escorrega e não segura.' },
-      { id: 'D', text: '...uma hora se mistura.' },
+      { id: 'A', text: 'Ironia' },
+      { id: 'B', text: 'Personificação' },
+      { id: 'C', text: 'Pleonasmo' },
+      { id: 'D', text: 'Hipérbole' },
     ],
     correctAnswer: 'B',
-    explanation: 'Este é um famoso ditado popular que nos ensina que a resiliência e a constância podem superar qualquer barreira física ou mental.',
+    explanation: 'A personificação (ou prosopopeia) ocorre quando atribuímos atitudes e emoções humanas (como "dançar") a coisas inanimadas (como a "gota d\'água").',
   },
 ];
 
@@ -456,7 +456,7 @@ export default function Lesson({ onBack, subject }: LessonProps) {
       <div className="fixed bottom-0 left-0 w-full px-6 py-6 bg-white border-t border-slate-100 flex items-center justify-between z-50">
         <div className="max-w-md mx-auto w-full flex items-center justify-between">
           <button
-            onClick={onBack}
+            onClick={handleNextChallenge}
             className="text-[#4CA5FE] font-black text-[12px] tracking-widest uppercase hover:opacity-80 transition-opacity text-left leading-tight"
           >
             Pular<br />Lição

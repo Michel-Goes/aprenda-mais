@@ -171,7 +171,7 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
             </div>
           </div>
           <div className="flex-1 text-center md:text-left">
-            <h2 className="text-3xl font-headline font-extrabold tracking-tight text-on-surface mb-1">{userName}</h2>
+            <h2 className="text-3xl font-headline font-extrabold tracking-tight text-on-surface mb-1 -translate-y-[10px]">{userName}</h2>
             {/* <p className="text-on-surface-variant font-medium mb-6">Pequeno Explorador Galático</p> */}
 
             <div className="space-y-2">
