@@ -1,9 +1,10 @@
-import { User, Lock, Eye, EyeOff, Chrome, Grid } from 'lucide-react';
+import { User, Lock, Eye, EyeOff, Chrome } from 'lucide-react';
 import { motion } from 'motion/react';
-import React, { useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import React, { useState, useCallback, memo } from 'react';
+import { supabase } from '../services/supabase';
+import logo from '../assets/images/logo.png';
 
-export default function Login() {
+const Login = memo(function Login() {
   const [view, setView] = useState<'login' | 'signup' | 'forgot_password'>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -24,7 +25,7 @@ export default function Login() {
     }
   }, []);
 
-  const handleAuth = async (e: React.FormEvent) => {
+  const handleAuth = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErrorText('');
@@ -107,7 +108,8 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [email, password, name, view]);
+  
   const handleOAuthSignIn = async (provider: 'google' | 'azure') => {
     try {
       setLoading(true);
@@ -144,7 +146,7 @@ export default function Login() {
             <img
               alt="Aprenda+ Logo"
               className="relative w-64 md:w-80 object-contain drop-shadow-[0_12px_40px_rgba(0,46,82,0.1)]"
-              src="/logo.png"
+              src={logo}
             />
           </motion.div>
         </header>
@@ -261,24 +263,15 @@ export default function Login() {
                 <div className="flex-grow border-t border-surface-variant"></div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <button
                   type="button"
                   onClick={() => handleOAuthSignIn('google')}
                   disabled={loading}
-                  className="flex items-center justify-center gap-2 py-3 rounded-lg bg-surface-container-low hover:bg-surface-variant transition-colors group disabled:opacity-50"
+                  className="flex items-center justify-center gap-3 py-2.5 rounded-lg bg-white border-2 border-outline-variant shadow-sm hover:bg-surface-container-low transition-all group disabled:opacity-50"
                 >
                   <Chrome className="w-5 h-5 text-on-surface-variant group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-bold text-on-surface-variant">Google</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleOAuthSignIn('azure')}
-                  disabled={loading}
-                  className="flex items-center justify-center gap-2 py-3 rounded-lg bg-surface-container-low hover:bg-surface-variant transition-colors group disabled:opacity-50"
-                >
-                  <Grid className="w-5 h-5 text-on-surface-variant group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-bold text-on-surface-variant">Microsoft</span>
+                  <span className="text-base font-extrabold text-on-surface-variant">Google</span>
                 </button>
               </div>
             </>
@@ -305,4 +298,6 @@ export default function Login() {
       </main>
     </div>
   );
-}
+});
+
+export default Login;

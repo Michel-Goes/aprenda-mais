@@ -63,7 +63,7 @@ export default function Store() {
 
   return (
     <main className="pt-24 pb-32 px-6 max-w-5xl mx-auto">
-      <motion.section 
+      <motion.section
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="mb-10 relative overflow-hidden rounded-lg bg-gradient-to-br from-primary to-primary-container p-8 text-white shadow-xl"
@@ -85,12 +85,11 @@ export default function Store() {
 
       <nav className="flex gap-3 mb-8 overflow-x-auto pb-2 scrollbar-hide">
         {categories.map((cat) => (
-          <button 
+          <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`px-6 py-2.5 rounded-full font-bold whitespace-nowrap transition-all ${
-              activeCategory === cat ? 'bg-blue-700 text-white shadow-lg' : 'bg-white text-on-surface-variant hover:bg-surface-container-low'
-            }`}
+            className={`px-6 py-2.5 rounded-full font-bold whitespace-nowrap transition-all ${activeCategory === cat ? 'bg-blue-700 text-white shadow-lg' : 'bg-white text-on-surface-variant hover:bg-surface-container-low'
+              }`}
           >
             {cat}
           </button>
@@ -99,7 +98,7 @@ export default function Store() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredItems.map((item, i) => (
-          <motion.div 
+          <motion.div
             key={item.id}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -129,7 +128,7 @@ export default function Store() {
                   </button>
                 ) : (
                   <button className="bg-gradient-to-br from-primary to-primary-container text-white px-5 py-2 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">
-                    {item.price > 300 ? 'Comprar' : 'Resgatar'}
+                    Resgatar
                   </button>
                 )}
               </div>

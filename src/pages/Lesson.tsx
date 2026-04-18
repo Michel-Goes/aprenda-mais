@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Lightbulb, Check, ArrowRight, X, Trophy, Target } from 'lucide-react';
+import imgLobos from '../assets/images/lobos.jpg';
+import imgAbelhas from '../assets/images/abelhas.jpg';
+import imgEstrelas from '../assets/images/estrelas.jpg';
+import imgCaixas from '../assets/images/caixas.jpg';
+import imgAguaPedra from '../assets/images/agua-pedra.jpg';
 
 interface LessonProps {
   onBack?: () => void;
@@ -22,7 +27,7 @@ const portugueseChallenges: Challenge[] = [
     module: 'Módulo 1: Natureza',
     question: 'Qual é o coletivo de lobos?',
     hint: 'É um termo também usado para designar bandos familiares.',
-    image: '/img/lobos.jpg',
+    image: imgLobos,
     options: [
       { id: 'A', text: 'Pillars' },
       { id: 'B', text: 'Alcateia' },
@@ -36,7 +41,7 @@ const portugueseChallenges: Challenge[] = [
     module: 'Módulo 1: Natureza',
     question: 'Qual é o coletivo de abelhas?',
     hint: 'É um termo muito associado ao zumbido e ao agrupamento desses insetos.',
-    image: '/img/abelhas.jpg',
+    image: imgAbelhas,
     options: [
       { id: 'A', text: 'Enxame' },
       { id: 'B', text: 'Ninhada' },
@@ -50,7 +55,7 @@ const portugueseChallenges: Challenge[] = [
     module: 'Módulo 2: Universo',
     question: 'Qual é o nome dado a um grupo de estrelas?',
     hint: 'As doze mais famosas formam as figuras do zodíaco.',
-    image: '/img/estrelas.jpg',
+    image: imgEstrelas,
     options: [
       { id: 'A', text: 'Arquipélago' },
       { id: 'B', text: 'Galáxia' },
@@ -64,7 +69,7 @@ const portugueseChallenges: Challenge[] = [
     module: 'Módulo 3: Ortografia',
     question: 'Qual é a forma correta de escrita?',
     hint: 'Refere-se ao ato de guardar algo dentro de uma caixa de papelão.',
-    image: '/img/caixas.jpg',
+    image: imgCaixas,
     options: [
       { id: 'A', text: 'Encaixotar' },
       { id: 'B', text: 'Encaxotar' },
@@ -78,7 +83,7 @@ const portugueseChallenges: Challenge[] = [
     module: 'Módulo 5: Literatura',
     question: 'Na frase "A gota d\'água dançava sobre a pedra", qual figura de linguagem foi utilizada?',
     hint: 'Essa figura de linguagem atribui ações ou sentimentos humanos a seres inanimados.',
-    image: '/img/agua-pedra.jpg',
+    image: imgAguaPedra,
     options: [
       { id: 'A', text: 'Ironia' },
       { id: 'B', text: 'Personificação' },

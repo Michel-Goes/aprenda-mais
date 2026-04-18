@@ -1,4 +1,5 @@
 import { Star } from 'lucide-react';
+import logo from '../../assets/images/logo.png';
 
 export default function TopBar() {
   return (
@@ -7,7 +8,7 @@ export default function TopBar() {
         <img
           alt="Aprenda+"
           className="h-10 w-auto object-contain"
-          src="/logo.png"
+          src={logo}
         />
       </div>
       <div className="bg-blue-50 px-4 py-1.5 rounded-full flex items-center gap-2">
