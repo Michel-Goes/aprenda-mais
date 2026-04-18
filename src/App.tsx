@@ -19,10 +19,7 @@ export default function App() {
   const [session, setSession] = useState<any>(null);
   const [activeScreen, setActiveScreen] = useState<ScreenType>('journey');
   const [lessonSubject, setLessonSubject] = useState<'math' | 'portuguese'>('portuguese');
-  const [isRecoveringPassword, setIsRecoveringPassword] = useState(() => {
-    // Detect recovery from URL immediately on mount
-    return typeof window !== 'undefined' && window.location.hash.includes('type=recovery');
-  });
+  const [isRecoveringPassword, setIsRecoveringPassword] = useState(false);
   const [isLoadingSession, setIsLoadingSession] = useState(true);
 
   useEffect(() => {
@@ -35,16 +32,21 @@ export default function App() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
-      if (event === 'PASSWORD_RECOVERY' || window.location.hash.includes('type=recovery')) {
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsRecoveringPassword(true);
+      } else if (session && window.location.hash.includes('type=recovery')) {
+        // Fallback in case the event is INITIAL_SESSION but the URL has the recovery hash
         setIsRecoveringPassword(true);
       }
       setIsLoadingSession(false);
-    });
 
-    // Remova o hash da URL para limpar a exibição (opcional, recomendado)
-    if (window.location.hash.includes('type=recovery')) {
-        window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
-    }
+      // Limpar o hash da URL APÓS o Supabase estabalecer a sessão
+      if (window.location.hash.includes('type=recovery')) {
+        setTimeout(() => {
+          window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+        }, 500);
+      }
+    });
 
     return () => subscription.unsubscribe();
   }, []);
