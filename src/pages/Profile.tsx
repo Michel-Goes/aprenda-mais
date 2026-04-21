@@ -1,7 +1,7 @@
 import { Star, Flame, Award, Settings, ChevronRight, Camera, User, Trash2, X, Edit2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useState, useRef, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../services/supabase';
 
 interface ProfileProps {
   onSettingsClick: () => void;
@@ -104,7 +104,7 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
         animate={{ opacity: 1, y: 0 }}
         className="relative mb-8"
       >
-        <div className="bg-white p-8 rounded-lg shadow-[0_12px_32px_rgba(0,46,82,0.06)] flex flex-col md:flex-row items-center gap-8 overflow-hidden">
+        <div className="bg-white p-8 rounded-lg shadow-[0_12px_32px_rgba(0,46,82,0.06)] flex flex-col md:flex-row items-center gap-8 relative z-10 transition-all">
           <div className="relative" ref={dropdownRef}>
             <div 
               className="w-32 h-32 rounded-xl bg-primary-container p-1 shadow-lg transform -rotate-3 relative overflow-hidden flex items-center justify-center"
@@ -140,7 +140,7 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
               </button>
 
               {isDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-surface-variant rounded-lg shadow-lg py-1 flex flex-col z-30">
+                <div className="absolute top-full left-0 md:left-auto md:right-0 mt-2 w-48 bg-white border border-surface-variant rounded-xl shadow-2xl py-1 flex flex-col z-[99]">
                   <button 
                     onClick={handleUploadOptionClick}
                     className="text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low hover:text-primary transition-colors"

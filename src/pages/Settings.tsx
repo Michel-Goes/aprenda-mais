@@ -107,7 +107,7 @@ export default function Settings({ onLogout, onNavigate, userName = 'Estudante',
       </div>
 
       <div className="mt-12 text-center">
-        <p className="text-xs font-bold text-outline uppercase tracking-widest">Aprenda+ v1.0</p>
+        <p className="text-xs font-bold text-outline uppercase tracking-widest">Aprenda+ BETA</p>
         <div className="mt-4 flex justify-center gap-2">
           <div className="w-2 h-2 rounded-full bg-primary-container"></div>
           <div className="w-2 h-2 rounded-full bg-tertiary-container"></div>

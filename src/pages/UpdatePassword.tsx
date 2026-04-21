@@ -1,7 +1,8 @@
 import { Lock, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'motion/react';
 import React, { useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../services/supabase';
+import logo from '../assets/images/logo.png';
 
 interface UpdatePasswordProps {
   onPasswordUpdated: () => void;
@@ -60,7 +61,7 @@ export default function UpdatePassword({ onPasswordUpdated }: UpdatePasswordProp
             <img
               alt="Aprenda+ Logo"
               className="relative w-64 md:w-80 object-contain drop-shadow-[0_12px_40px_rgba(0,46,82,0.1)]"
-              src="/logo.png"
+              src={logo}
             />
           </motion.div>
         </header>
