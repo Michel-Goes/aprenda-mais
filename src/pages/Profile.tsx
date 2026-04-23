@@ -1,6 +1,6 @@
 import { Star, Flame, Award, Settings, ChevronRight, Camera, User, Trash2, X, Edit2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 
 interface ProfileProps {

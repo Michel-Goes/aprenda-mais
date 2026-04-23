@@ -1,6 +1,6 @@
 import { Volume2, Bell, HelpCircle, Lock, LogOut, ChevronRight, User } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface SettingsProps {
   onLogout: () => void;
@@ -10,8 +10,22 @@ interface SettingsProps {
 }
 
 export default function Settings({ onLogout, onNavigate, userName = 'Estudante', avatarUrl = null }: SettingsProps) {
-  const [somEnabled, setSomEnabled] = useState(true);
-  const [notificacoesEnabled, setNotificacoesEnabled] = useState(true);
+  const [somEnabled, setSomEnabled] = useState(() => {
+    const saved = localStorage.getItem('somEnabled');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  const [notificacoesEnabled, setNotificacoesEnabled] = useState(() => {
+    const saved = localStorage.getItem('notificacoesEnabled');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('somEnabled', JSON.stringify(somEnabled));
+  }, [somEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('notificacoesEnabled', JSON.stringify(notificacoesEnabled));
+  }, [notificacoesEnabled]);
 
   return (
     <main className="pt-24 px-6 pb-32 max-w-2xl mx-auto">
