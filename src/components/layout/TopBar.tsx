@@ -1,7 +1,10 @@
 import { Star } from 'lucide-react';
 import logo from '../../assets/images/logo.png';
+import { useGame } from '../../contexts/GameContext';
 
 export default function TopBar() {
+  const { stars } = useGame();
+  
   return (
     <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 py-4 bg-white/70 backdrop-blur-md shadow-[0_12px_32px_rgba(0,46,82,0.06)] h-20">
       <div className="flex items-center gap-2">
@@ -12,7 +15,7 @@ export default function TopBar() {
         />
       </div>
       <div className="bg-blue-50 px-4 py-1.5 rounded-full flex items-center gap-2">
-        <span className="text-blue-700 font-bold text-sm">Nível 5 • 120</span>
+        <span className="text-blue-700 font-bold text-sm">Nível 5 • {stars}</span>
         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
       </div>
     </header>

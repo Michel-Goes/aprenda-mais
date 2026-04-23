@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { motion } from 'motion/react';
-import { Lightbulb, Check, ArrowRight, X, Trophy, Target } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Lightbulb, Check, ArrowRight, X, Trophy, Target, Clock, Zap } from 'lucide-react';
+import { useGame } from '../contexts/GameContext';
 import imgLobos from '../assets/images/lobos.jpg';
 import imgAbelhas from '../assets/images/abelhas.jpg';
 import imgEstrelas from '../assets/images/estrelas.jpg';
@@ -170,6 +171,16 @@ export default function Lesson({ onBack, subject }: LessonProps) {
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [showFinalScreen, setShowFinalScreen] = useState(false);
+  const { inventory } = useGame();
+  const hasTimePowerUp = inventory.includes(4);
+  const [timePowerUpUsed, setTimePowerUpUsed] = useState(false);
+  const [powerUpMessage, setPowerUpMessage] = useState('');
+
+  const activateTimePowerUp = () => {
+    setTimePowerUpUsed(true);
+    setPowerUpMessage('⏳ +30s Concedidos!');
+    setTimeout(() => setPowerUpMessage(''), 3000);
+  };
 
   const challenges: Challenge[] = subject === 'math' ? mathChallenges : portugueseChallenges;
 
@@ -361,9 +372,34 @@ export default function Lesson({ onBack, subject }: LessonProps) {
             <h1 className="text-[2.2rem] font-headline font-extrabold text-[#111827] leading-[1.1] mb-5">
               {challenge.question}
             </h1>
-            <p className="text-[#64748b] leading-relaxed text-[15px] mb-6">
-              Identifique o termo correto utilizado.
-            </p>
+            <div className="flex justify-between items-start mb-6">
+              <p className="text-[#64748b] leading-relaxed text-[15px]">
+                Identifique o termo correto utilizado.
+              </p>
+              {hasTimePowerUp && !timePowerUpUsed && !showResult && (
+                <button 
+                  onClick={activateTimePowerUp}
+                  className="bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-full font-bold text-xs flex items-center gap-1 hover:bg-yellow-200 transition-colors shadow-sm ml-4 shrink-0"
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  Usar Tempo+
+                </button>
+              )}
+            </div>
+            
+            <AnimatePresence>
+              {powerUpMessage && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold px-4 py-2 rounded-lg mb-6 flex items-center justify-center gap-2 shadow-md w-full"
+                >
+                  <Zap className="w-4 h-4" />
+                  {powerUpMessage}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <div className="bg-[#f2f8ff] rounded-xl p-4 flex gap-3 border border-[#dbeafe] mb-8">
               <Lightbulb className="w-5 h-5 text-[#3b82f6] flex-shrink-0 mt-0.5" />

@@ -1,9 +1,12 @@
-import { ShoppingBag, Star, Lock } from 'lucide-react';
-import { motion } from 'motion/react';
+import { ShoppingBag, Star, Lock, CheckCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
+import { useGame } from '../contexts/GameContext';
 
 export default function Store() {
+  const { stars, inventory, purchaseItem } = useGame();
   const [activeCategory, setActiveCategory] = useState('Tudo');
+  const [toastMessage, setToastMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
   const categories = ['Tudo', 'Avatares', 'Roupas', 'Power-ups'];
   const items = [
     {
@@ -60,6 +63,19 @@ export default function Store() {
 
   const filteredItems = activeCategory === 'Tudo' ? items : items.filter(item => item.category === activeCategory);
 
+  const handlePurchase = (item: any) => {
+    if (item.locked) {
+      showToast('Este item está bloqueado', 'error');
+      return;
+    }
+    const result = purchaseItem(item.id, item.price);
+    showToast(result.message, result.success ? 'success' : 'error');
+  };
+
+  const showToast = (text: string, type: 'success' | 'error') => {
+    setToastMessage({ text, type });
+    setTimeout(() => setToastMessage(null), 3000);
+  };
 
   return (
     <main className="pt-24 pb-32 px-6 max-w-5xl mx-auto">
@@ -74,7 +90,7 @@ export default function Store() {
           <div className="flex gap-4">
             <div className="bg-tertiary-container text-on-tertiary-container px-4 py-2 rounded-xl flex items-center gap-2 font-bold shadow-md">
               <Star className="w-5 h-5 fill-current" />
-              <span>540 Moedas</span>
+              <span>{stars} Moedas</span>
             </div>
           </div>
         </div>
@@ -122,12 +138,17 @@ export default function Store() {
                   <span className="font-black text-[#F4D151] text-lg">{item.price}</span>
                 </div>
                 {item.locked ? (
-                  <button className="bg-surface-container-low text-on-surface-variant/40 px-5 py-2 rounded-lg font-bold text-sm cursor-not-allowed flex items-center gap-2">
+                  <button onClick={() => handlePurchase(item)} className="bg-surface-container-low text-on-surface-variant/40 px-5 py-2 rounded-lg font-bold text-sm cursor-not-allowed flex items-center gap-2">
                     <Lock className="w-4 h-4" />
                     Bloqueado
                   </button>
+                ) : inventory.includes(item.id) ? (
+                  <button disabled className="bg-surface-variant/50 text-on-surface-variant px-5 py-2 rounded-lg font-bold text-sm cursor-not-allowed flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    Adquirido
+                  </button>
                 ) : (
-                  <button className="bg-gradient-to-br from-primary to-primary-container text-white px-5 py-2 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">
+                  <button onClick={() => handlePurchase(item)} className="bg-gradient-to-br from-primary to-primary-container text-white px-5 py-2 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">
                     Resgatar
                   </button>
                 )}
@@ -136,6 +157,22 @@ export default function Store() {
           </motion.div>
         ))}
       </div>
+
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className={`fixed bottom-[100px] left-1/2 -translate-x-1/2 px-6 py-3 rounded-full shadow-lg font-bold text-sm z-50 flex items-center gap-2 ${
+              toastMessage.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+            }`}
+          >
+            {toastMessage.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+            {toastMessage.text}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

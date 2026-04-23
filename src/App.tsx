@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom';
+import { GameProvider } from './contexts/GameContext';
 import { supabase } from './services/supabase';
 import MainLayout from './components/layout/MainLayout';
 
@@ -108,10 +109,12 @@ export default function App() {
   const avatarUrl = userMetadata.custom_avatar_url || null;
 
   return (
-    <BrowserRouter>
-      <Suspense fallback={<LoadingScreen />}>
-        <RoutesWrapper userName={userName} avatarUrl={avatarUrl} />
-      </Suspense>
-    </BrowserRouter>
+    <GameProvider>
+      <BrowserRouter>
+        <Suspense fallback={<LoadingScreen />}>
+          <RoutesWrapper userName={userName} avatarUrl={avatarUrl} />
+        </Suspense>
+      </BrowserRouter>
+    </GameProvider>
   );
 }
