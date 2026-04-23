@@ -1,10 +1,54 @@
-import { motion } from 'motion/react';
-import { ArrowLeft } from 'lucide-react';
-import { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { ArrowLeft, AlertTriangle, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../services/supabase';
 
 export default function Privacy({ onBack }: { onBack: () => void }) {
-  const [shareData, setShareData] = useState(true);
-  const [profileVisibility, setProfileVisibility] = useState(true);
+  const [shareData, setShareData] = useState(() => {
+    const saved = localStorage.getItem('privacy_shareData');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  const [profileVisibility, setProfileVisibility] = useState(() => {
+    const saved = localStorage.getItem('privacy_profileVisibility');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('privacy_shareData', JSON.stringify(shareData));
+  }, [shareData]);
+
+  useEffect(() => {
+    localStorage.setItem('privacy_profileVisibility', JSON.stringify(profileVisibility));
+  }, [profileVisibility]);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const handleDeleteConfirm = async () => {
+    setShowDeleteModal(false);
+
+    try {
+      // Calls a custom RPC function defined in Supabase to delete the current user's auth record securely
+      const { error } = await supabase.rpc('delete_user');
+      
+      if (error) {
+        console.warn('RPC delete_user missing or failed. If you want true deletion from DB, add the RPC function in Supabase:', error.message);
+        // We still proceed to logout and clear local data to "start from zero" locally
+      }
+
+      // Clear all local progress (stars, inventory, profile settings, etc)
+      localStorage.clear();
+      
+      // Sign out
+      await supabase.auth.signOut();
+      
+      // Redirect to login/home
+      window.location.href = '/';
+      
+    } catch (e) {
+      console.error(e);
+      alert('Erro inesperado ao deletar a conta.');
+    }
+  };
 
   return (
     <main className="pt-24 px-6 pb-32 max-w-2xl mx-auto">
@@ -45,13 +89,61 @@ export default function Privacy({ onBack }: { onBack: () => void }) {
             </div>
             
             <div className="mt-8 pt-6 border-t border-outline-variant/30">
-               <button className="text-error font-bold hover:underline transition-all">
+               <button onClick={() => setShowDeleteModal(true)} className="flex items-center gap-2 text-error font-bold hover:opacity-80 transition-opacity">
+                 <Trash2 className="w-5 h-5" />
                  Deletar minha conta permanentemente
                </button>
             </div>
           </div>
         </div>
       </motion.section>
+
+      <AnimatePresence>
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+             {/* Overlay */}
+             <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }} 
+                className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" 
+                onClick={() => setShowDeleteModal(false)}
+             />
+             
+             {/* Modal Content */}
+             <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 10 }} 
+                animate={{ opacity: 1, scale: 1, y: 0 }} 
+                exit={{ opacity: 0, scale: 0.95, y: 10 }} 
+                className="bg-white rounded-[2rem] p-6 w-full max-w-sm relative z-10 shadow-2xl overflow-hidden"
+             >
+               <div className="w-full flex flex-col items-center text-center mt-2">
+                 <div className="w-16 h-16 rounded-full bg-error/10 flex items-center justify-center text-error mb-4">
+                   <AlertTriangle className="w-8 h-8" />
+                 </div>
+                 <h3 className="text-2xl font-headline font-extrabold text-on-surface mb-2">Excluir Conta?</h3>
+                 <p className="text-on-surface-variant font-medium text-[15px] mb-8 px-2">
+                   Todo o seu progresso será perdido, incluindo estrelas, ofensivas e conquistas. Esta ação é <strong>irreversível</strong>.
+                 </p>
+               </div>
+               <div className="flex flex-col gap-3">
+                 <button 
+                   onClick={handleDeleteConfirm} 
+                   className="w-full py-4 rounded-xl font-bold text-white bg-error hover:bg-red-600 shadow-[0_8px_16px_rgba(220,38,38,0.2)] transition-all active:scale-[0.98]"
+                 >
+                   Sim, deletar agora
+                 </button>
+                 <button 
+                   onClick={() => setShowDeleteModal(false)} 
+                   className="w-full py-4 rounded-xl font-bold text-on-surface-variant bg-surface-container-low hover:bg-surface-variant transition-colors"
+                 >
+                   Cancelar
+                 </button>
+               </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

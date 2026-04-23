@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Lightbulb, Check, ArrowRight, X, Trophy, Target, Clock, Zap } from 'lucide-react';
 import { useGame } from '../contexts/GameContext';
@@ -175,9 +175,33 @@ export default function Lesson({ onBack, subject }: LessonProps) {
   const hasTimePowerUp = inventory.includes(4);
   const [timePowerUpUsed, setTimePowerUpUsed] = useState(false);
   const [powerUpMessage, setPowerUpMessage] = useState('');
+  const [timeLeft, setTimeLeft] = useState(60);
+
+  const handleTimeUp = () => {
+    setIsCorrect(false);
+    setShowResult(true);
+  };
+
+  useEffect(() => {
+    if (showFinalScreen || showResult) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleTimeUp();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [showFinalScreen, showResult, currentChallengeIndex]);
 
   const activateTimePowerUp = () => {
     setTimePowerUpUsed(true);
+    setTimeLeft((prev) => prev + 30);
     setPowerUpMessage('⏳ +30s Concedidos!');
     setTimeout(() => setPowerUpMessage(''), 3000);
   };
@@ -202,6 +226,7 @@ export default function Lesson({ onBack, subject }: LessonProps) {
       setSelectedOption(null);
       setShowResult(false);
       setIsCorrect(false);
+      setTimeLeft(60);
     } else {
       // Mostrar tela final
       setShowFinalScreen(true);
@@ -335,15 +360,25 @@ export default function Lesson({ onBack, subject }: LessonProps) {
   return (
     <main className="min-h-screen pt-24 pb-48 px-6 bg-[#fafcff]">
       <div className="max-w-md mx-auto relative">
-        {/* Progress Bar centered */}
+        {/* Progress Bar and Timer */}
         <div className="w-full mb-8">
-          <div className="h-2 w-full bg-[#e2e8f0] rounded-full overflow-hidden">
-            <div
-              className="h-full bg-[#4CA5FE] rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] transition-all duration-500"
-              style={{ width: `${progressPercentage}%` }}
-            ></div>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex-1">
+              <div className="h-2 w-full bg-[#e2e8f0] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#4CA5FE] rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] transition-all duration-500"
+                  style={{ width: `${progressPercentage}%` }}
+                ></div>
+              </div>
+            </div>
+            <div className={`ml-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-sm transition-colors ${
+               timeLeft <= 10 && !showResult ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-slate-100 text-slate-700'
+             }`}>
+               <Clock className="w-4 h-4" />
+               {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+            </div>
           </div>
-          <p className="text-xs text-right text-[#64748b] mt-2">
+          <p className="text-xs text-left text-[#64748b]">
             Desafio {currentChallengeIndex + 1} de {challenges.length}
           </p>
         </div>
@@ -483,7 +518,7 @@ export default function Lesson({ onBack, subject }: LessonProps) {
                   }`}
               >
                 <p className={`font-bold mb-2 ${isCorrect ? 'text-[#10b981]' : 'text-[#ef4444]'}`}>
-                  {isCorrect ? '✓ Correto!' : '✗ Incorreto'}
+                  {isCorrect ? '✓ Correto!' : timeLeft <= 0 && selectedOption === null ? '⏰ Tempo Esgotado!' : '✗ Incorreto'}
                 </p>
                 <p className="text-[14px] leading-relaxed text-[#334155]">
                   {challenge.explanation}
