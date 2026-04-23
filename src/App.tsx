@@ -105,7 +105,7 @@ export default function App() {
   }
 
   const userMetadata = session.user?.user_metadata || {};
-  const userName = userMetadata.full_name || 'Estudante';
+  const userName = userMetadata.custom_name || userMetadata.full_name || 'Estudante';
   const avatarUrl = userMetadata.custom_avatar_url || null;
 
   return (

@@ -22,6 +22,13 @@ export default function UpdatePassword({ onPasswordUpdated }: UpdatePasswordProp
       setErrorText('As senhas não coincidem.');
       return;
     }
+
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{6,}$/;
+    if (!passwordRegex.test(password)) {
+      setErrorText('A senha deve ter no mínimo 6 caracteres, contendo letras, números e um símbolo especial.');
+      return;
+    }
+
     setLoading(true);
     setErrorText('');
     setMessage('');

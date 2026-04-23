@@ -39,12 +39,20 @@ const Login = memo(function Login() {
         });
         if (error) throw error;
       } else if (view === 'signup') {
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{6,}$/;
+        if (!passwordRegex.test(password)) {
+          setErrorText('A senha deve ter no mínimo 6 caracteres, contendo letras, números e um símbolo especial.');
+          setLoading(false);
+          return;
+        }
+
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: {
               full_name: name,
+              custom_name: name,
             }
           }
         });
