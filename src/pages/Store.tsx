@@ -7,6 +7,7 @@ export default function Store() {
   const { stars, inventory, purchaseItem } = useGame();
   const [activeCategory, setActiveCategory] = useState('Tudo');
   const [toastMessage, setToastMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
+  const [itemToPurchase, setItemToPurchase] = useState<any>(null);
   const categories = ['Tudo', 'Avatares', 'Roupas', 'Power-ups'];
   const items = [
     {
@@ -68,8 +69,14 @@ export default function Store() {
       showToast('Este item está bloqueado', 'error');
       return;
     }
-    const result = purchaseItem(item.id, item.price);
+    setItemToPurchase(item);
+  };
+
+  const confirmPurchase = () => {
+    if (!itemToPurchase) return;
+    const result = purchaseItem(itemToPurchase.id, itemToPurchase.price);
     showToast(result.message, result.success ? 'success' : 'error');
+    setItemToPurchase(null);
   };
 
   const showToast = (text: string, type: 'success' | 'error') => {
@@ -157,6 +164,39 @@ export default function Store() {
           </motion.div>
         ))}
       </div>
+
+      <AnimatePresence>
+        {itemToPurchase && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setItemToPurchase(null)}
+              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+            />
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full pointer-events-auto text-center"
+              >
+                <h3 className="text-2xl font-headline font-bold text-on-surface mb-2">Confirmar Compra</h3>
+                <p className="text-on-surface-variant mb-6">Deseja realmente comprar "{itemToPurchase.name}" por {itemToPurchase.price} moedas?</p>
+                <div className="flex gap-4">
+                  <button onClick={() => setItemToPurchase(null)} className="flex-1 bg-surface-variant text-on-surface-variant py-3 rounded-xl font-bold hover:bg-surface-variant/80 transition-colors">
+                    Cancelar
+                  </button>
+                  <button onClick={confirmPurchase} className="flex-1 bg-gradient-to-br from-primary to-primary-container text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all">
+                    Confirmar
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {toastMessage && (

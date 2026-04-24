@@ -108,6 +108,8 @@ export default function Settings({ onLogout, onNavigate, userName = 'Estudante',
 
         <div className="bg-white p-2 rounded-lg shadow-[0_12px_32px_rgba(0,46,82,0.06)]">
           <button 
+            id="logout-button"
+            data-testid="logout-button"
             onClick={onLogout}
             className="w-full flex items-center gap-4 p-4 hover:bg-error/10 transition-colors rounded-lg group"
           >

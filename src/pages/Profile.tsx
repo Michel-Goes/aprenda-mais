@@ -13,6 +13,8 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
   const [isUploading, setIsUploading] = useState(false);
   const [showAllMedals, setShowAllMedals] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editNameValue, setEditNameValue] = useState(userName);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +43,10 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
   useEffect(() => {
     setAvatarSrc(avatarUrl);
   }, [avatarUrl]);
+
+  useEffect(() => {
+    setEditNameValue(userName);
+  }, [userName]);
 
   const handleUploadOptionClick = () => {
     setIsDropdownOpen(false);
@@ -171,7 +177,38 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
             </div>
           </div>
           <div className="flex-1 text-center md:text-left">
-            <h2 className="text-3xl font-headline font-extrabold tracking-tight text-on-surface mb-1 -translate-y-[10px]">{userName}</h2>
+            <div className="flex items-center justify-center md:justify-start gap-2 mb-1 -translate-y-[10px]">
+              {isEditingName ? (
+                <input
+                  type="text"
+                  autoFocus
+                  value={editNameValue}
+                  onChange={(e) => setEditNameValue(e.target.value)}
+                  onBlur={async () => {
+                    setIsEditingName(false);
+                    if (editNameValue !== userName && editNameValue.trim() !== '') {
+                      await supabase.auth.updateUser({ data: { custom_name: editNameValue.trim() } });
+                    }
+                  }}
+                  onKeyDown={async (e) => {
+                    if (e.key === 'Enter') {
+                      setIsEditingName(false);
+                      if (editNameValue !== userName && editNameValue.trim() !== '') {
+                        await supabase.auth.updateUser({ data: { custom_name: editNameValue.trim() } });
+                      }
+                    }
+                  }}
+                  className="text-3xl font-headline font-extrabold tracking-tight text-on-surface bg-surface-container-low border border-primary rounded px-2 w-full max-w-[200px]"
+                />
+              ) : (
+                <>
+                  <h2 className="text-3xl font-headline font-extrabold tracking-tight text-on-surface">{userName}</h2>
+                  <button onClick={() => setIsEditingName(true)} className="text-on-surface-variant hover:text-primary transition-colors">
+                    <Edit2 className="w-5 h-5" />
+                  </button>
+                </>
+              )}
+            </div>
 
             <div className="space-y-2">
               <div className="flex justify-between items-end mb-1">
