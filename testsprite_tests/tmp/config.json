@@ -1,0 +1,20 @@
+{
+  "status": "init",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3002/",
+  "backendAuthType": "basic token",
+  "backendUsername": "michelfgoes1998@gmail.com",
+  "backendPassword": "Ap#234",
+  "executionArgs": {
+    "projectName": "aprenda+ v1",
+    "projectPath": "c:\\Users\\miche\\OneDrive\\Documentos\\pasta-teste\\aprenda-mais\\aprenda+ v1",
+    "testIds": [],
+    "additionalInstruction": "",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-KMvH0dScrrIfVtf2nSByoaGlukJqrOL0b6aWxlhEbOSM3nTVR7PtKOWW01ggfpmn2vKkncexrQ6lH3uMT1qEeBI_uHHi4w0TKb5-NPipTcTDBWJz-5v1b0x7BScuPUAJWfc"
+    }
+  },
+  "serverPort": 51639
+}

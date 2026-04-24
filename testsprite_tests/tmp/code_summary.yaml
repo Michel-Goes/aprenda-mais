@@ -1,0 +1,22 @@
+version: "2"
+type: backend
+tech_stack:
+  - Node.js
+  - Express
+features:
+  - name: Healthcheck API
+    description: Simple healthcheck endpoint to verify backend status
+    files:
+      - server.js
+    endpoints:
+      - method: GET
+        path: /api/healthcheck
+        description: Returns a success message and timestamp
+        auth_required: false
+        response_schema:
+          "200": 
+            status: string
+            message: string
+            timestamp: string
+    depends_on: []
+known_limitations: []

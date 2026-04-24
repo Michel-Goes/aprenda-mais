@@ -27,12 +27,21 @@ export default function Privacy({ onBack }: { onBack: () => void }) {
     setShowDeleteModal(false);
 
     try {
-      // Calls a custom RPC function defined in Supabase to delete the current user's auth record securely
-      const { error } = await supabase.rpc('delete_user');
+      // Chama o backend para deletar a conta de forma segura
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (error) {
-        console.warn('RPC delete_user missing or failed. If you want true deletion from DB, add the RPC function in Supabase:', error.message);
-        // We still proceed to logout and clear local data to "start from zero" locally
+      if (session) {
+        const response = await fetch('http://localhost:3003/api/users/me', {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`
+          }
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.warn('Backend deletion failed:', errorData.error);
+        }
       }
 
       // Clear all local progress (stars, inventory, profile settings, etc)

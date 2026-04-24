@@ -15,4 +15,4 @@ O projeto Saber Mais é um projeto feito por unversitários da Ânima Hub para c
 
 
 ## App em produção
-Acesse o app em produção pela URL: https://aprenda-mais-eight.vercel.app/
+Acesse o app em produção pela URL: 

@@ -28,6 +28,23 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const updateBackendProfile = async (dataToUpdate: any) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    try {
+      await fetch('http://localhost:3003/api/users/me', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(dataToUpdate)
+      });
+    } catch (e) {
+      console.error('Erro ao atualizar perfil no backend:', e);
+    }
+  };
+
   const allMedalsList = [
     { label: 'Mestre da Leitura', icon: Star, color: 'bg-yellow-100 text-yellow-600' },
     { label: 'Explorador Espacial', icon: Award, color: 'bg-blue-100 text-blue-600' },
@@ -72,9 +89,7 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
 
       const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
       
-      await supabase.auth.updateUser({
-        data: { custom_avatar_url: data.publicUrl }
-      });
+      await updateBackendProfile({ custom_avatar_url: data.publicUrl });
       
       setAvatarSrc(data.publicUrl);
     } catch (error) {
@@ -89,9 +104,7 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
     setIsDropdownOpen(false);
     try {
       setIsUploading(true);
-      await supabase.auth.updateUser({
-        data: { custom_avatar_url: null }
-      });
+      await updateBackendProfile({ custom_avatar_url: null });
       setAvatarSrc(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -187,14 +200,14 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
                   onBlur={async () => {
                     setIsEditingName(false);
                     if (editNameValue !== userName && editNameValue.trim() !== '') {
-                      await supabase.auth.updateUser({ data: { custom_name: editNameValue.trim() } });
+                      await updateBackendProfile({ custom_name: editNameValue.trim() });
                     }
                   }}
                   onKeyDown={async (e) => {
                     if (e.key === 'Enter') {
                       setIsEditingName(false);
                       if (editNameValue !== userName && editNameValue.trim() !== '') {
-                        await supabase.auth.updateUser({ data: { custom_name: editNameValue.trim() } });
+                        await updateBackendProfile({ custom_name: editNameValue.trim() });
                       }
                     }
                   }}
