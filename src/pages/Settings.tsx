@@ -1,4 +1,4 @@
-import { Volume2, Bell, HelpCircle, Lock, LogOut, ChevronRight, User } from 'lucide-react';
+import { Volume2, Bell, HelpCircle, Lock, LogOut, ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState, useEffect } from 'react';
 
@@ -53,7 +53,6 @@ export default function Settings({ onLogout, onNavigate, userName = 'Estudante',
         </div>
         <div>
           <h3 className="text-xl font-bold text-on-surface">{userName}</h3>
-          {/* <p className="text-sm text-on-surface-variant font-medium">Estudante desde Jan 2024</p> */}
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { Star, Flame, Award, Settings, ChevronRight, Camera, User, Trash2, X, Edit2 } from 'lucide-react';
+import { Star, Flame, Award, Settings, Edit2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../services/supabase';
@@ -172,7 +172,6 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
           </div>
           <div className="flex-1 text-center md:text-left">
             <h2 className="text-3xl font-headline font-extrabold tracking-tight text-on-surface mb-1 -translate-y-[10px]">{userName}</h2>
-            {/* <p className="text-on-surface-variant font-medium mb-6">Pequeno Explorador Galático</p> */}
 
             <div className="space-y-2">
               <div className="flex justify-between items-end mb-1">
