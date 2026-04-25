@@ -2,6 +2,7 @@ import { Star, Flame, Award, Settings, Edit2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../services/supabase';
+import { fetchWithAuth } from '../services/api';
 
 interface ProfileProps {
   onSettingsClick: () => void;
@@ -29,20 +30,11 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
   }, []);
 
   const updateBackendProfile = async (dataToUpdate: any) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
     try {
-      const response = await fetch('http://localhost:3003/api/users/me', {
+      await fetchWithAuth('/users/me', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
         body: JSON.stringify(dataToUpdate)
       });
-      if (!response.ok) {
-        throw new Error(`Erro do servidor: ${response.status}`);
-      }
       // Atualiza a sessão no frontend para refletir as mudanças feitas no backend
       await supabase.auth.refreshSession();
     } catch (e) {

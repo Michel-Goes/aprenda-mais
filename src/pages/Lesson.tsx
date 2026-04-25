@@ -1,168 +1,14 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Lightbulb, Check, ArrowRight, X, Trophy, Target, Clock, Zap } from 'lucide-react';
+import { Lightbulb, Check, ArrowRight, X, Clock, Zap } from 'lucide-react';
 import { useGame } from '../contexts/GameContext';
-import imgLobos from '../assets/images/lobos.jpg';
-import imgAbelhas from '../assets/images/abelhas.jpg';
-import imgEstrelas from '../assets/images/estrelas.jpg';
-import imgCaixas from '../assets/images/caixas.jpg';
-import imgAguaPedra from '../assets/images/agua-pedra.jpg';
+import { portugueseChallenges, mathChallenges, Challenge } from '../data/challenges';
+import LessonFinalScreen from '../components/ui/LessonFinalScreen';
 
 interface LessonProps {
   onBack?: () => void;
   subject: 'math' | 'portuguese';
 }
-
-interface Challenge {
-  module: string;
-  question: string;
-  hint: string;
-  image?: string;
-  options: { id: string; text: string }[];
-  correctAnswer: string;
-  explanation: string;
-}
-
-const portugueseChallenges: Challenge[] = [
-  {
-    module: 'Módulo 1: Natureza',
-    question: 'Qual é o coletivo de lobos?',
-    hint: 'É um termo também usado para designar bandos familiares.',
-    image: imgLobos,
-    options: [
-      { id: 'A', text: 'Pillars' },
-      { id: 'B', text: 'Alcateia' },
-      { id: 'C', text: 'Cardume' },
-      { id: 'D', text: 'Vara' },
-    ],
-    correctAnswer: 'B',
-    explanation: 'O coletivo correto para um grupo de lobos é alcateia.',
-  },
-  {
-    module: 'Módulo 1: Natureza',
-    question: 'Qual é o coletivo de abelhas?',
-    hint: 'É um termo muito associado ao zumbido e ao agrupamento desses insetos.',
-    image: imgAbelhas,
-    options: [
-      { id: 'A', text: 'Enxame' },
-      { id: 'B', text: 'Ninhada' },
-      { id: 'C', text: 'Rebanho' },
-      { id: 'D', text: 'Manada' },
-    ],
-    correctAnswer: 'A',
-    explanation: 'O termo formal utilizado para descrever um grande grupo de abelhas voando ou trabalhando juntas é enxame.',
-  },
-  {
-    module: 'Módulo 2: Universo',
-    question: 'Qual é o nome dado a um grupo de estrelas?',
-    hint: 'As doze mais famosas formam as figuras do zodíaco.',
-    image: imgEstrelas,
-    options: [
-      { id: 'A', text: 'Arquipélago' },
-      { id: 'B', text: 'Galáxia' },
-      { id: 'C', text: 'Constelação' },
-      { id: 'D', text: 'Sideral' },
-    ],
-    correctAnswer: 'C',
-    explanation: 'Constelação é a área do céu onde um agrupamento de estrelas forma figuras imaginárias.',
-  },
-  {
-    module: 'Módulo 3: Ortografia',
-    question: 'Qual é a forma correta de escrita?',
-    hint: 'Refere-se ao ato de guardar algo dentro de uma caixa de papelão.',
-    image: imgCaixas,
-    options: [
-      { id: 'A', text: 'Encaixotar' },
-      { id: 'B', text: 'Encaxotar' },
-      { id: 'C', text: 'Encaichotar' },
-      { id: 'D', text: 'Encaxiotar' },
-    ],
-    correctAnswer: 'A',
-    explanation: 'A palavra deriva de "caixa" (com x), portanto a maneira correta de grafá-la é encaixotar.',
-  },
-  {
-    module: 'Módulo 5: Literatura',
-    question: 'Na frase "A gota d\'água dançava sobre a pedra", qual figura de linguagem foi utilizada?',
-    hint: 'Essa figura de linguagem atribui ações ou sentimentos humanos a seres inanimados.',
-    image: imgAguaPedra,
-    options: [
-      { id: 'A', text: 'Ironia' },
-      { id: 'B', text: 'Personificação' },
-      { id: 'C', text: 'Pleonasmo' },
-      { id: 'D', text: 'Hipérbole' },
-    ],
-    correctAnswer: 'B',
-    explanation: 'A personificação (ou prosopopeia) ocorre quando atribuímos atitudes e emoções humanas (como "dançar") a coisas inanimadas (como a "gota d\'água").',
-  },
-];
-
-const mathChallenges: Challenge[] = [
-  {
-    module: 'Módulo: Matemática',
-    question: 'Quanto é 3x + 5x?',
-    hint: 'Some os termos semelhantes.',
-    options: [
-      { id: 'A', text: '8x' },
-      { id: 'B', text: '15x' },
-      { id: 'C', text: '2x' },
-      { id: 'D', text: '9x' },
-    ],
-    correctAnswer: 'A',
-    explanation: 'Somando 3x com 5x temos 8x, pois são termos semelhantes que se somam.',
-  },
-  {
-    module: 'Módulo: Matemática',
-    question: 'Quanto é 45 ÷ 9?',
-    hint: 'Pense em quantas vezes o 9 cabe em 45.',
-    options: [
-      { id: 'A', text: '4' },
-      { id: 'B', text: '5' },
-      { id: 'C', text: '6' },
-      { id: 'D', text: '7' },
-    ],
-    correctAnswer: 'B',
-    explanation: '9 cabe 5 vezes em 45, então 45 ÷ 9 = 5.',
-  },
-  {
-    module: 'Módulo: Matemática',
-    question: 'Qual é a área de um triângulo com base 5 e altura 4?',
-    hint: 'Use a fórmula: base × altura ÷ 2.',
-    options: [
-      { id: 'A', text: '20' },
-      { id: 'B', text: '10' },
-      { id: 'C', text: '9' },
-      { id: 'D', text: '12' },
-    ],
-    correctAnswer: 'B',
-    explanation: 'Área = 5 × 4 ÷ 2 = 10. Portanto a resposta correta é 10.',
-  },
-  {
-    module: 'Módulo: Matemática',
-    question: 'Resolva: 2x - 3 = 11',
-    hint: 'Some 3 em ambos os lados e depois divida por 2.',
-    options: [
-      { id: 'A', text: '7' },
-      { id: 'B', text: '8' },
-      { id: 'C', text: '5' },
-      { id: 'D', text: '10' },
-    ],
-    correctAnswer: 'A',
-    explanation: 'Somando 3 a ambos os lados, 2x = 14. Então x = 7.',
-  },
-  {
-    module: 'Módulo: Matemática',
-    question: 'Quanto é 25% de 200?',
-    hint: '25% é 1/4 do total.',
-    options: [
-      { id: 'A', text: '25' },
-      { id: 'B', text: '40' },
-      { id: 'C', text: '50' },
-      { id: 'D', text: '75' },
-    ],
-    correctAnswer: 'C',
-    explanation: '25% de 200 é 200 ÷ 4 = 50.',
-  },
-];
 
 export default function Lesson({ onBack, subject }: LessonProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -207,7 +53,6 @@ export default function Lesson({ onBack, subject }: LessonProps) {
   };
 
   const challenges: Challenge[] = subject === 'math' ? mathChallenges : portugueseChallenges;
-
   const challenge = challenges[currentChallengeIndex];
 
   const handleVerifyAnswer = () => {
@@ -228,7 +73,6 @@ export default function Lesson({ onBack, subject }: LessonProps) {
       setIsCorrect(false);
       setTimeLeft(60);
     } else {
-      // Mostrar tela final
       setShowFinalScreen(true);
     }
   };
@@ -237,123 +81,13 @@ export default function Lesson({ onBack, subject }: LessonProps) {
   const subjectLabel = subject === 'math' ? 'Matemática' : 'Português';
 
   if (showFinalScreen) {
-    const percentage = (score / challenges.length) * 100;
-    const isExcellent = percentage >= 80;
-    const isGood = percentage >= 60;
-
     return (
-      <main className="min-h-screen pt-24 pb-48 px-6 bg-[#fafcff] flex items-center justify-center">
-        <div className="max-w-md mx-auto w-full">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="text-center"
-          >
-            {/* Trophy Icon */}
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="mb-8 flex justify-center"
-            >
-              <div className={`w-24 h-24 rounded-full flex items-center justify-center shadow-lg ${isExcellent ? 'bg-[#fbbf24]' : isGood ? 'bg-[#60a5fa]' : 'bg-[#f87171]'
-                }`}>
-                <Trophy className={`w-12 h-12 ${isExcellent ? 'text-yellow-700' : isGood ? 'text-blue-700' : 'text-red-700'
-                  }`} />
-              </div>
-            </motion.div>
-
-            {/* Score */}
-            <div className="mb-8">
-              <p className="text-[14px] font-bold uppercase tracking-widest text-[#4CA5FE] mb-2">
-                Sua Pontuação
-              </p>
-              <div className="bg-white rounded-[2rem] p-8 shadow-lg shadow-[rgba(0,0,0,0.08)]">
-                <div className="text-[4rem] font-headline font-extrabold text-[#1e293b] leading-none">
-                  {score}/{challenges.length}
-                </div>
-                <div className="text-[15px] text-[#64748b] font-semibold mt-3">
-                  {percentage.toFixed(0)}% de acerto
-                </div>
-                <div className="w-full h-2 bg-[#e2e8f0] rounded-full mt-4 overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${percentage}%` }}
-                    transition={{ duration: 1, delay: 0.2 }}
-                    className={`h-full rounded-full ${isExcellent ? 'bg-[#10b981]' : isGood ? 'bg-[#4CA5FE]' : 'bg-[#f97316]'
-                      }`}
-                  ></motion.div>
-                </div>
-              </div>
-            </div>
-
-            {/* Message */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className={`rounded-[1.5rem] p-8 mb-8 border-2 ${isExcellent
-                ? 'bg-[#ecfdf5] border-[#10b981]'
-                : isGood
-                  ? 'bg-[#eff6ff] border-[#4CA5FE]'
-                  : 'bg-[#fef2f2] border-[#ef4444]'
-                }`}
-            >
-              <h2 className={`text-[1.8rem] font-headline font-extrabold mb-3 ${isExcellent
-                ? 'text-[#10b981]'
-                : isGood
-                  ? 'text-[#4CA5FE]'
-                  : 'text-[#ef4444]'
-                }`}>
-                {isExcellent ? '🎉 Excelente!' : isGood ? '👏 Muito bom!' : '💪 Bom esforço!'}
-              </h2>
-              <p className="text-[15px] leading-relaxed text-[#334155]">
-                {isExcellent
-                  ? `Parabéns! Você arrasou em ${subjectLabel}! Sua performance foi impecável.`
-                  : isGood
-                    ? `Parabéns! Você tem um ótimo conhecimento em ${subjectLabel}!`
-                    : `Continue praticando em ${subjectLabel}! Você já sabe bastante, mas pode melhorar ainda mais.`}
-              </p>
-            </motion.div>
-
-            {/* Score Breakdown */}
-            <div className="bg-white rounded-[1.5rem] p-6 shadow-lg shadow-[rgba(0,0,0,0.08)] mb-8 border border-[#e2e8f0]">
-              <div className="flex items-center gap-3 mb-4">
-                <Target className="w-5 h-5 text-[#4CA5FE]" />
-                <h3 className="font-bold text-[#1e293b]">Detalhes</h3>
-              </div>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between items-center">
-                  <span className="text-[#64748b] font-medium">Desafios respondidos</span>
-                  <span className="font-bold text-[#1e293b]">{challenges.length}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-[#64748b] font-medium">Respostas corretas</span>
-                  <span className="font-bold text-[#10b981]">{score}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-[#64748b] font-medium">Respostas incorretas</span>
-                  <span className="font-bold text-[#ef4444]">{challenges.length - score}</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        <div className="fixed bottom-0 left-0 w-full px-6 py-6 bg-white border-t border-slate-100 flex items-center justify-between z-50">
-          <div className="max-w-md mx-auto w-full flex items-center justify-center gap-4">
-            <button
-              onClick={onBack}
-              className="bg-[#4CA5FE] text-white font-bold py-3 px-8 rounded-[2rem] flex items-center gap-3 hover:bg-[#3b82f6] hover:-translate-y-0.5 transition-all shadow-lg shadow-[#4CA5FE]/30 flex-1"
-            >
-              <div className="text-left leading-tight text-[15px]">
-                Voltar ao<br />Menu
-              </div>
-              <ArrowRight className="w-5 h-5 flex-shrink-0" />
-            </button>
-          </div>
-        </div>
-      </main>
+      <LessonFinalScreen 
+        score={score} 
+        totalChallenges={challenges.length} 
+        subjectLabel={subjectLabel} 
+        onBack={onBack!} 
+      />
     );
   }
 
