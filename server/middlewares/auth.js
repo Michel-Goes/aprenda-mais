@@ -17,20 +17,17 @@ export const requireAuth = async (req, res, next) => {
     return res.status(401).json({ error: 'Token is missing' });
   }
 
-  // Bypass para testes automatizados (TestSprite)
   if (process.env.NODE_ENV !== 'production' && (token === 'mock-jwt-token' || token === 'mock-jwt-token-fail')) {
     req.user = { id: 'mock-user-id', email: 'test@example.com' };
     return next();
   }
 
-  // Verificar o token com o Supabase
   const { data: { user }, error } = await supabase.auth.getUser(token);
 
   if (error || !user) {
     return res.status(401).json({ error: 'Invalid token or user not found' });
   }
 
-  // Anexar o usuário à requisição para os próximos middlewares/controllers
   req.user = user;
   next();
 };

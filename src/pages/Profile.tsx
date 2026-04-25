@@ -35,7 +35,6 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
         method: 'PUT',
         body: JSON.stringify(dataToUpdate)
       });
-      // Atualiza a sessão no frontend para refletir as mudanças feitas no backend
       await supabase.auth.refreshSession();
     } catch (e) {
       console.error('Erro ao atualizar perfil no backend:', e);

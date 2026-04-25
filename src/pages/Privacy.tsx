@@ -27,7 +27,6 @@ export default function Privacy({ onBack }: { onBack: () => void }) {
     setShowDeleteModal(false);
 
     try {
-      // Chama o backend para deletar a conta de forma segura
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session) {
@@ -44,13 +43,10 @@ export default function Privacy({ onBack }: { onBack: () => void }) {
         }
       }
 
-      // Clear all local progress (stars, inventory, profile settings, etc)
       localStorage.clear();
       
-      // Sign out
       await supabase.auth.signOut();
       
-      // Redirect to login/home
       window.location.href = '/';
       
     } catch (e) {

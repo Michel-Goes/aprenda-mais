@@ -6,7 +6,6 @@ dotenv.config();
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-// Auxiliary function to create a Supabase client in the user's context.
 const getSupabaseClient = (req) => {
   const token = req.headers.authorization?.split(' ')[1];
   return createClient(supabaseUrl, supabaseKey, {
@@ -18,7 +17,6 @@ const getSupabaseClient = (req) => {
   });
 };
 
-// Restricted validation schema
 const updateProfileSchema = z.object({
   full_name: z.string().min(2).optional(),
   avatar_url: z.string().url().optional(),
@@ -36,7 +34,6 @@ export const updateProfile = async (req, res) => {
       return res.status(400).json({ error: 'No data provided' });
     }
 
-    // Validation with Zod using 422 (Unprocessable Entity)
     const validationResult = updateProfileSchema.safeParse(dataToUpdate);
     if (!validationResult.success) {
       return res.status(422).json({ error: 'Invalid data', details: validationResult.error.issues });
@@ -46,13 +43,10 @@ export const updateProfile = async (req, res) => {
 
     const token = req.headers.authorization?.split(' ')[1];
     
-    // Bypass for automated testing
     if (process.env.NODE_ENV !== 'production' && token === 'mock-jwt-token') {
       return res.json({ name: validData.name, avatar: validData.avatar });
     }
 
-    // Make a direct request to the Superbase Auth REST API.
-    // Because the Supabase SSR client requires an active local session to use auth.updateUser
     const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
       method: 'PUT',
       headers: {
@@ -80,7 +74,6 @@ export const deleteAccount = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
     
-    // Bypass for automated testing
     if (process.env.NODE_ENV !== 'production') {
       if (token === 'mock-jwt-token-fail') {
         return res.status(500).json({ error: 'Simulated RPC failure' });
@@ -91,7 +84,6 @@ export const deleteAccount = async (req, res) => {
 
     const supabase = getSupabaseClient(req);
     
-    // It calls the RPC (Remote Computer Processing) that the bank already has to securely delete the user.
     const { error } = await supabase.rpc('delete_user');
     
     if (error) throw error;

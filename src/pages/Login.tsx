@@ -58,8 +58,6 @@ const Login = memo(function Login() {
         });
         if (error) throw error;
 
-        // O Supabase oculta o erro de "E-mail já existente" por segurança (Prevenção de Enumeração),
-        // mas ele retorna um array de "identities" vazio nos casos em que o e-mail já existia.
         if (data?.user && data.user.identities && data.user.identities.length === 0) {
           setErrorText('Este e-mail já está cadastrado. Tente fazer login ou recupere a senha.');
           setLoading(false);
@@ -69,7 +67,6 @@ const Login = memo(function Login() {
         setMessage('Verifique seu e-mail para confirmar a conta!');
       } else if (view === 'forgot_password') {
         
-        // Tentativa de contornar a segurança do Supabase com uma função Customizada do Banco de Dados
         try {
           const { data: emailExists, error: rpcError } = await supabase.rpc('check_email_exists', { email_to_check: email });
           
