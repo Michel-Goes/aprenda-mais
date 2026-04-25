@@ -86,21 +86,21 @@ export default function Ranking({ userName = 'Estudante', avatarUrl = null }: Ra
                 : 'bg-white hover:scale-[1.02]'
             }`}
           >
-            <span className={`w-8 font-black text-lg italic ${person.isUser ? 'text-primary' : 'text-on-surface-variant'}`}>
+            <span className={`w-8 flex-shrink-0 font-black text-lg italic ${person.isUser ? 'text-primary' : 'text-on-surface-variant'}`}>
               {person.rank}
             </span>
             {person.img ? (
-              <img className={`w-12 h-12 rounded-full object-cover ${person.isUser ? 'border-2 border-primary' : ''}`} src={person.img} referrerPolicy="no-referrer" />
+              <img className={`w-12 h-12 flex-shrink-0 rounded-full object-cover ${person.isUser ? 'border-2 border-primary' : ''}`} src={person.img} referrerPolicy="no-referrer" />
             ) : (
-              <div className={`w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center ${person.isUser ? 'border-2 border-primary' : ''}`}>
+              <div className={`w-12 h-12 flex-shrink-0 rounded-full bg-blue-500 flex items-center justify-center ${person.isUser ? 'border-2 border-primary' : ''}`}>
                 <span className="text-lg font-headline font-bold text-white uppercase">
                   {person.name.replace(' (Você)', '').split(' ').map(n => n[0]).slice(0, 2).join('')}
                 </span>
               </div>
             )}
-            <div className="flex-grow">
-              <h3 className={`font-bold ${person.isUser ? 'text-primary' : 'text-on-surface'}`}>{person.name}</h3>
-              <p className={`text-xs ${person.isUser ? 'text-primary-dim font-bold' : 'text-on-surface-variant'}`}>{person.level}</p>
+            <div className="flex-grow min-w-0">
+              <h3 className={`font-bold truncate ${person.isUser ? 'text-primary' : 'text-on-surface'}`} title={person.name}>{person.name}</h3>
+              <p className={`text-xs truncate ${person.isUser ? 'text-primary-dim font-bold' : 'text-on-surface-variant'}`} title={person.level}>{person.level}</p>
             </div>
             <div className="text-right">
               <span className={`font-black text-primary ${person.isUser ? 'text-xl' : ''}`}>{person.points}</span>

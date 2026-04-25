@@ -1,7 +1,0 @@
-[
-  {
-    "id": "TC001",
-    "title": "get api healthcheck returns service healthy status",
-    "description": "Verify that GET /api/healthcheck returns 200 status with a JSON body containing status 'ok', message 'service healthy', and a valid timestamp."
-  }
-]
