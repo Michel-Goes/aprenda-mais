@@ -32,7 +32,7 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
     try {
-      await fetch('http://localhost:3003/api/users/me', {
+      const response = await fetch('http://localhost:3003/api/users/me', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -40,6 +40,11 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
         },
         body: JSON.stringify(dataToUpdate)
       });
+      if (!response.ok) {
+        throw new Error(`Erro do servidor: ${response.status}`);
+      }
+      // Atualiza a sessão no frontend para refletir as mudanças feitas no backend
+      await supabase.auth.refreshSession();
     } catch (e) {
       console.error('Erro ao atualizar perfil no backend:', e);
     }
@@ -124,9 +129,9 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
         className="relative mb-8"
       >
         <div className="bg-white p-8 rounded-lg shadow-[0_12px_32px_rgba(0,46,82,0.06)] flex flex-col md:flex-row items-center gap-8 relative z-10 transition-all">
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative flex-shrink-0" ref={dropdownRef}>
             <div 
-              className="w-32 h-32 rounded-xl bg-primary-container p-1 shadow-lg transform -rotate-3 relative overflow-hidden flex items-center justify-center"
+              className="w-32 h-32 flex-shrink-0 rounded-xl bg-primary-container p-1 shadow-lg transform -rotate-3 relative overflow-hidden flex items-center justify-center"
             >
               {avatarSrc ? (
                 <img 
