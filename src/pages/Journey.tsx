@@ -81,7 +81,7 @@ export default function Journey() {
 
       {/* Floating Progress Card */}
       <div className="fixed bottom-28 left-6 right-6 z-40">
-        <motion.div 
+        <motion.div
           initial={{ y: 100 }}
           animate={{ y: 0 }}
           className="bg-white/90 backdrop-blur-xl p-5 rounded-lg shadow-[0_20px_50px_rgba(0,46,82,0.1)] border border-white/50"
