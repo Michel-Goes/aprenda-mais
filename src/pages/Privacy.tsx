@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, AlertTriangle, Trash2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
+import { fetchWithAuth } from '../services/api';
 
 export default function Privacy({ onBack }: { onBack: () => void }) {
   const [shareData, setShareData] = useState(() => {
@@ -30,16 +31,14 @@ export default function Privacy({ onBack }: { onBack: () => void }) {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session) {
-        const response = await fetch('http://localhost:3003/api/users/me', {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`
-          }
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.warn('Backend deletion failed:', errorData.error);
+        try {
+          await fetchWithAuth('/users/me', {
+            method: 'DELETE'
+          });
+        } catch (e) {
+          console.warn('Backend deletion failed:', e);
+          alert('Aviso: Como o servidor backend não pôde ser acessado, a exclusão falhou. Para deletar permanentemente, o servidor precisa estar online.');
+          return; // Aborta para não limpar o cache/sessão sem deletar a conta real
         }
       }
 

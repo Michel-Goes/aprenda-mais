@@ -1,4 +1,4 @@
-import { Star, Flame, Award, Settings, Edit2 } from 'lucide-react';
+import { Star, Flame, Award, Settings, Edit2, Check, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../services/supabase';
@@ -31,13 +31,26 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
 
   const updateBackendProfile = async (dataToUpdate: any) => {
     try {
-      await fetchWithAuth('/users/me', {
-        method: 'PUT',
-        body: JSON.stringify(dataToUpdate)
+      // 1. Atualiza diretamente no Supabase (Funciona mesmo sem o backend estar rodando!)
+      const { error } = await supabase.auth.updateUser({
+        data: dataToUpdate
       });
+      if (error) throw error;
+
+      // 2. Tenta notificar o backend se ele estiver online
+      try {
+        await fetchWithAuth('/users/me', {
+          method: 'PUT',
+          body: JSON.stringify(dataToUpdate)
+        });
+      } catch (e) {
+        console.warn('Backend não acessível do mobile, mas perfil salvo no Supabase com sucesso!', e);
+      }
+      
       await supabase.auth.refreshSession();
     } catch (e) {
       console.error('Erro ao atualizar perfil no backend:', e);
+      alert('Erro ao atualizar. Tente novamente.');
     }
   };
 
@@ -188,27 +201,50 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
           <div className="flex-1 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-2 mb-1 -translate-y-[10px]">
               {isEditingName ? (
-                <input
-                  type="text"
-                  autoFocus
-                  value={editNameValue}
-                  onChange={(e) => setEditNameValue(e.target.value)}
-                  onBlur={async () => {
-                    setIsEditingName(false);
-                    if (editNameValue !== userName && editNameValue.trim() !== '') {
-                      await updateBackendProfile({ custom_name: editNameValue.trim() });
-                    }
-                  }}
-                  onKeyDown={async (e) => {
-                    if (e.key === 'Enter') {
+                <div className="flex items-center gap-2 bg-surface-container-low border-2 border-primary rounded-xl p-1 w-full max-w-[280px]">
+                  <input
+                    type="text"
+                    autoFocus
+                    value={editNameValue}
+                    onChange={(e) => setEditNameValue(e.target.value)}
+                    onKeyDown={async (e) => {
+                      if (e.key === 'Enter') {
+                        setIsEditingName(false);
+                        if (editNameValue !== userName && editNameValue.trim() !== '') {
+                          await updateBackendProfile({ custom_name: editNameValue.trim() });
+                        }
+                      } else if (e.key === 'Escape') {
+                        setIsEditingName(false);
+                        setEditNameValue(userName);
+                      }
+                    }}
+                    className="text-xl font-headline font-extrabold tracking-tight text-on-surface bg-transparent outline-none w-full px-2"
+                  />
+                  <button 
+                    onClick={() => {
+                      setIsEditingName(false);
+                      setEditNameValue(userName);
+                    }}
+                    className="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-lg transition-colors flex-shrink-0"
+                    aria-label="Cancelar"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={async () => {
                       setIsEditingName(false);
                       if (editNameValue !== userName && editNameValue.trim() !== '') {
                         await updateBackendProfile({ custom_name: editNameValue.trim() });
+                      } else {
+                        setEditNameValue(userName);
                       }
-                    }
-                  }}
-                  className="text-3xl font-headline font-extrabold tracking-tight text-on-surface bg-surface-container-low border border-primary rounded px-2 w-full max-w-[200px]"
-                />
+                    }}
+                    className="p-2 text-white bg-primary hover:bg-primary-dim rounded-lg transition-colors shadow-sm flex-shrink-0"
+                    aria-label="Salvar"
+                  >
+                    <Check className="w-5 h-5" />
+                  </button>
+                </div>
               ) : (
                 <>
                   <h2 className="text-3xl font-headline font-extrabold tracking-tight text-on-surface">{userName}</h2>
