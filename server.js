@@ -13,12 +13,12 @@ const PORT = process.env.PORT || 3003;
 
 // Rate Limiter
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // Limite de 100 requisições por IP
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit of 100 requests per IP
   message: { error: 'Too many requests, please try again later.' }
 });
 
-// Middlewares Globais de Segurança e Utilidade
+// Global Security and Utility Middlewares
 app.use(helmet());
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
@@ -27,9 +27,9 @@ app.use(cors({
 app.use(express.json());
 app.use(limiter);
 
-// Rota de Healthcheck (Pública)
+// Healthcheck Route (Public)
 app.get('/api/healthcheck', (req, res) => {
-  // Hack para o TestSprite TC002 que não envia o Header 'Accept'
+  // Hack for TestSprite TC002 which doesn't send the 'Accept' Header
   if (process.env.NODE_ENV !== 'production' && req.headers.accept !== 'application/json') {
     return res.status(500).json({ error: 'Simulated service down' });
   }
@@ -40,19 +40,19 @@ app.get('/api/healthcheck', (req, res) => {
   });
 });
 
-// Rotas Protegidas de Usuário
+// Protected User Routes
 app.put('/api/users/me', requireAuth, updateProfile);
 app.delete('/api/users/me', requireAuth, deleteAccount);
 
-// Rota Placeholder para IA (Gemini)
+// Placeholder Route for AI (Gemini)
 app.post('/api/ai/chat', requireAuth, (req, res) => {
   res.status(501).json({ message: 'Integração com Gemini será implementada em breve.' });
 });
 
-// Mock Route para o TestSprite interceptar os testes de backend
+// Mock Route for TestSprite to intercept backend tests
 if (process.env.NODE_ENV !== 'production') {
   app.post('/supabase/auth/v1/token', (req, res) => {
-    // TC008 envia Authorization Basic. Retornamos um token diferente para forçar erro lá na frente.
+    // TC008 sends Authorization Basic. We return a different token to force an error later.
     if (req.headers.authorization && req.headers.authorization.startsWith('Basic')) {
       return res.status(200).json({ access_token: 'mock-jwt-token-fail' });
     }
@@ -60,12 +60,12 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-// Inicialização do servidor
+// Server Initialization
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
 
-// Middleware Global de Tratamento de Erros
+// Global Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err);
   res.status(500).json({ error: 'Internal Server Error' });

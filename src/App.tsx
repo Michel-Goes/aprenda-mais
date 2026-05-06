@@ -23,7 +23,7 @@ const LoadingScreen = () => (
   </div>
 );
 
-// Wrapper para as Rotas passarem os callbacks nativos para os componentes
+// Wrapper for Routes to pass native callbacks to components
 function RoutesWrapper({ userName, avatarUrl }: { userName: string; avatarUrl: string | null }) {
   const navigate = useNavigate();
   return (

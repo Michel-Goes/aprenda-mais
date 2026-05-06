@@ -32,13 +32,13 @@ export default function Privacy({ onBack }: { onBack: () => void }) {
       
       if (session) {
         try {
-          // Chama a função direto no Supabase, ignorando o backend Express!
+          // Calls the function directly in Supabase, bypassing the Express backend!
           const { error } = await supabase.rpc('delete_user');
           if (error) throw error;
         } catch (e: any) {
           console.warn('Supabase deletion failed:', e);
           alert(`Aviso: A exclusão falhou. Detalhe do erro: ${e.message}`);
-          return; // Aborta para não limpar o cache/sessão sem deletar a conta real
+          return; // Abort to not clear cache/session without deleting the actual account
         }
       }
 

@@ -3,6 +3,8 @@ import { motion } from 'motion/react';
 import React, { useState, useCallback, memo } from 'react';
 import { supabase } from '../services/supabase';
 import logo from '../assets/images/logo.png';
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
 
 const Login = memo(function Login() {
   const [view, setView] = useState<'login' | 'signup' | 'forgot_password'>('login');
@@ -14,7 +16,7 @@ const Login = memo(function Login() {
   const [errorText, setErrorText] = useState('');
   const [message, setMessage] = useState('');
 
-  // Verifica se a URL retornou um erro do Supabase (ex: link expirado por clique-duplo)
+  // Check if the URL returned an error from Supabase (e.g., expired link due to double click)
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash;
@@ -96,7 +98,7 @@ const Login = memo(function Login() {
     } catch (error: any) {
       let errorMessage = error.message || 'Ocorreu um erro.';
       
-      // Tradução de erros comuns do Supabase
+      // Translation of common Supabase errors
       if (errorMessage.includes('email rate limit exceeded')) {
         errorMessage = 'Muitas tentativas. Por favor, aguarde um pouco e tente novamente.';
       } else if (errorMessage.includes('Invalid login credentials')) {
@@ -177,39 +179,29 @@ const Login = memo(function Login() {
 
           <form className="space-y-5" onSubmit={handleAuth}>
             {view === 'signup' && (
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider ml-1">Nome Completo</label>
-                <div className="relative group">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors" />
-                  <input
-                    className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-4 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none"
-                    placeholder="Seu nome"
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-              </div>
+              <Input
+                label="Nome Completo"
+                icon={User}
+                placeholder="Seu nome"
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             )}
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider ml-1">E-mail</label>
-              <div className="relative group">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors" />
-                <input
-                  className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-4 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none"
-                  placeholder="nome@exemplo.com"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-            </div>
+            <Input
+              label="E-mail"
+              icon={User}
+              placeholder="nome@exemplo.com"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
             {view !== 'forgot_password' && (
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 w-full">
                 <div className="flex justify-between items-center px-1">
                   <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Senha</label>
                   {view === 'login' && (
@@ -226,38 +218,38 @@ const Login = memo(function Login() {
                     </button>
                   )}
                 </div>
-                <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors" />
-                  <input
-                    className="w-full bg-surface-container-high border-none rounded-DEFAULT pl-12 pr-12 py-4 font-body focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant outline-none"
-                    placeholder="••••••••"
-                    type={isPasswordVisible ? 'text' : 'password'}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <button
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-outline"
-                    type="button"
-                    onClick={() => setIsPasswordVisible((prev) => !prev)}
-                    aria-label={isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha'}
-                  >
-                    {isPasswordVisible ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
+                <Input
+                  icon={Lock}
+                  placeholder="••••••••"
+                  type={isPasswordVisible ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  rightIcon={
+                    <button
+                      className="text-outline-variant hover:text-outline"
+                      type="button"
+                      onClick={() => setIsPasswordVisible((prev) => !prev)}
+                      aria-label={isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha'}
+                    >
+                      {isPasswordVisible ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  }
+                />
               </div>
             )}
 
             {errorText && <p className="text-red-500 text-sm font-medium text-center">{errorText}</p>}
             {message && <p className="text-green-600 text-sm font-medium text-center">{message}</p>}
 
-            <button
-              className="w-full py-4 rounded-lg bg-gradient-to-br from-primary to-primary-container text-white font-headline font-extrabold text-lg shadow-[0_8px_16px_rgba(0,94,160,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 mt-2 disabled:opacity-50"
+            <Button
               type="submit"
-              disabled={loading}
+              isLoading={loading}
+              fullWidth
+              className="mt-2"
             >
-              {loading ? 'Carregando...' : view === 'login' ? 'Entrar' : view === 'signup' ? 'Cadastrar' : 'Enviar Link'}
-            </button>
+              {view === 'login' ? 'Entrar' : view === 'signup' ? 'Cadastrar' : 'Enviar Link'}
+            </Button>
           </form>
 
           {view !== 'forgot_password' && (
@@ -311,3 +303,4 @@ const Login = memo(function Login() {
 });
 
 export default Login;
+

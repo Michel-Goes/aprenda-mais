@@ -1,5 +1,8 @@
 import { Calculator, SpellCheck, Star, GraduationCap } from 'lucide-react';
 import { motion } from 'motion/react';
+import { Card } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
+
 interface ExercisesProps {
   onStartLesson?: (subject: 'math' | 'portuguese') => void;
 }
@@ -42,12 +45,13 @@ export default function Exercises({ onStartLesson }: ExercisesProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {subjects.map((subject, i) => (
-          <motion.div
+          <Card
             key={subject.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="bg-white rounded-lg p-6 shadow-[0_12px_32px_rgba(0,46,82,0.06)] flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300"
+            className="flex flex-col justify-between"
+            hoverEffect
           >
             <div>
               <div className={`w-14 h-14 ${subject.color === 'primary' ? 'bg-primary-container text-on-primary-container' : 'bg-tertiary-container text-on-tertiary-container'} rounded-2xl flex items-center justify-center mb-4`}>
@@ -67,14 +71,15 @@ export default function Exercises({ onStartLesson }: ExercisesProps) {
                   style={{ width: `${subject.progress}%` }}
                 ></div>
               </div>
-              <button
+              <Button
+                variant={subject.color === 'primary' ? 'primary' : 'tertiary'}
                 onClick={() => onStartLesson?.(subject.id as 'math' | 'portuguese')}
-                className={`w-full bg-gradient-to-br ${subject.color === 'primary' ? 'from-primary to-primary-container shadow-primary/20' : 'from-tertiary to-tertiary-container shadow-tertiary/20'} text-white py-4 rounded-lg font-bold active:scale-95 transition-all shadow-lg`}
+                fullWidth
               >
                 Praticar Agora
-              </button>
+              </Button>
             </div>
-          </motion.div>
+          </Card>
         ))}
 
         <div className="md:col-span-2 relative bg-surface-container-low rounded-lg p-6 overflow-hidden border-2 border-dashed border-outline-variant/30">

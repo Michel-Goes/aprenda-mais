@@ -3,7 +3,7 @@ import { supabase } from './supabase';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3003/api';
 
 /**
- * Wrapper para chamadas fetch que automaticamente injeta o token JWT do Supabase
+ * Wrapper for fetch calls that automatically inject the Supabase JWT token.
  */
 export async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const { data: { session } } = await supabase.auth.getSession();

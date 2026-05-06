@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from 'motion/react';
 import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 import { fetchWithAuth } from '../services/api';
+import { Modal } from '../components/ui/Modal';
+import { Button } from '../components/ui/Button';
 
 interface ProfileProps {
   onSettingsClick: () => void;
@@ -31,25 +33,25 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
 
   const updateBackendProfile = async (dataToUpdate: any) => {
     try {
-      // 1. Atualiza diretamente no Supabase (Funciona mesmo sem o backend estar rodando!)
+      // 1. Update directly in Supabase (Works even without the backend running!)
       const { error } = await supabase.auth.updateUser({
         data: dataToUpdate
       });
       if (error) throw error;
 
-      // 2. Tenta notificar o backend se ele estiver online
+      // 2. Try to notify the backend if it is online
       try {
         await fetchWithAuth('/users/me', {
           method: 'PUT',
           body: JSON.stringify(dataToUpdate)
         });
       } catch (e) {
-        console.warn('Backend não acessível do mobile, mas perfil salvo no Supabase com sucesso!', e);
+        console.warn('Backend not accessible from mobile, but profile saved in Supabase successfully!', e);
       }
       
       await supabase.auth.refreshSession();
     } catch (e) {
-      console.error('Erro ao atualizar perfil no backend:', e);
+      console.error('Error updating profile in backend:', e);
       alert('Erro ao atualizar. Tente novamente.');
     }
   };
@@ -311,92 +313,60 @@ export default function Profile({ onSettingsClick, userName = 'Estudante', avata
         </div>
       </section>
 
-      <AnimatePresence>
-        {showAllMedals && (
-          <>
-            {/* Backdrop (fundo escurecido) */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowAllMedals(false)}
-              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
-            />
-            
-            {/* Modal Container Centralizado */}
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-12 pointer-events-none">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="bg-white flex flex-col w-full max-w-3xl max-h-[85vh] rounded-[1.5rem] md:rounded-[2rem] shadow-2xl pointer-events-auto overflow-hidden"
-              >
-                
-                {/* Header do Modal */}
-                <div className="px-6 pt-6 pb-4 md:px-8 md:pt-8 flex justify-between items-start border-b border-surface-variant/50 bg-white relative z-10 shrink-0">
-                  <div>
-                    <h2 className="text-xl md:text-2xl font-headline font-extrabold text-on-surface">Todas as Medalhas</h2>
-                    <p className="text-xs md:text-sm font-body text-on-surface-variant mt-1.5">Veja todas as conquistas que você já desbloqueou.</p>
-                  </div>
-                  <button 
-                    onClick={() => setShowAllMedals(false)}
-                    className="text-primary font-bold font-label text-sm md:text-base hover:text-primary-dim transition-colors pt-1"
-                  >
-                    Fechar
-                  </button>
-                </div>
-                
-                {/* Corpo do Modal (Medalhas) com Scroll Horizontal por Páginas */}
-                <div className="pb-6 pt-2 bg-surface-container-lowest w-full rounded-b-[1.5rem] md:rounded-b-[2rem]">
-                  <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-4 px-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
-                    <style dangerouslySetInnerHTML={{__html: `::-webkit-scrollbar { display: none; }`}} />
-                    {Array.from({ length: Math.ceil(allMedalsList.length / 4) }).map((_, pageIndex) => (
-                      <div key={pageIndex} className="min-w-full snap-center shrink-0 px-4">
-                        <div className="grid grid-cols-2 gap-3 md:gap-4">
-                          {allMedalsList.slice(pageIndex * 4, pageIndex * 4 + 4).map((medal, i) => (
-                            <motion.div
-                              key={i}
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ delay: i * 0.05 }}
-                              className="bg-white p-3 rounded-xl shadow-sm border border-surface-variant/30 flex flex-col items-center justify-center min-h-[100px] md:min-h-[110px]"
-                            >
-                              <div className={`w-12 h-12 ${medal.color} rounded-full flex items-center justify-center mb-2 shadow-inner`}>
-                                <medal.icon className="w-6 h-6 fill-current" />
-                              </div>
-                              <span className="text-[10px] md:text-sm font-bold text-center leading-tight font-label text-on-surface line-clamp-2">{medal.label}</span>
-                            </motion.div>
-                          ))}
-                        </div>
+      <Modal 
+        isOpen={showAllMedals} 
+        onClose={() => setShowAllMedals(false)} 
+        title="Todas as Medalhas" 
+        description="Veja todas as conquistas que você já desbloqueou."
+      >
+        {/* Modal Body (Medals) with Horizontal Scroll by Pages */}
+        <div className="pb-6 pt-2 bg-surface-container-lowest w-full rounded-b-[1.5rem] md:rounded-b-[2rem]">
+          <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-4 px-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
+            <style dangerouslySetInnerHTML={{__html: `::-webkit-scrollbar { display: none; }`}} />
+            {Array.from({ length: Math.ceil(allMedalsList.length / 4) }).map((_, pageIndex) => (
+              <div key={pageIndex} className="min-w-full snap-center shrink-0 px-4">
+                <div className="grid grid-cols-2 gap-3 md:gap-4">
+                  {allMedalsList.slice(pageIndex * 4, pageIndex * 4 + 4).map((medal, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="bg-white p-3 rounded-xl shadow-sm border border-surface-variant/30 flex flex-col items-center justify-center min-h-[100px] md:min-h-[110px]"
+                    >
+                      <div className={`w-12 h-12 ${medal.color} rounded-full flex items-center justify-center mb-2 shadow-inner`}>
+                        <medal.icon className="w-6 h-6 fill-current" />
                       </div>
-                    ))}
-                  </div>
-                  
-                  {/* Indicadores de Página (Pontinhos) */}
-                  {Math.ceil(allMedalsList.length / 4) > 1 && (
-                    <div className="flex justify-center gap-1.5 mt-1">
-                      {Array.from({ length: Math.ceil(allMedalsList.length / 4) }).map((_, i) => (
-                        <div key={i} className="w-1.5 h-1.5 rounded-full bg-outline-variant/40" />
-                      ))}
-                    </div>
-                  )}
+                      <span className="text-[10px] md:text-sm font-bold text-center leading-tight font-label text-on-surface line-clamp-2">{medal.label}</span>
+                    </motion.div>
+                  ))}
                 </div>
-              </motion.div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Page Indicators (Dots) */}
+          {Math.ceil(allMedalsList.length / 4) > 1 && (
+            <div className="flex justify-center gap-1.5 mt-1">
+              {Array.from({ length: Math.ceil(allMedalsList.length / 4) }).map((_, i) => (
+                <div key={i} className="w-1.5 h-1.5 rounded-full bg-outline-variant/40" />
+              ))}
             </div>
-          </>
-        )}
-      </AnimatePresence>
+          )}
+        </div>
+      </Modal>
 
       <section className="mt-12">
-        <button
+        <Button
           onClick={onSettingsClick}
-          className="w-full bg-gradient-to-br from-primary to-primary-container text-white py-5 rounded-lg text-lg font-black font-headline shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3"
+          fullWidth
+          className="py-5 text-lg"
         >
           <Settings className="w-6 h-6" />
           Configurar Perfil
-        </button>
+        </Button>
       </section>
     </main>
   );
 }
+

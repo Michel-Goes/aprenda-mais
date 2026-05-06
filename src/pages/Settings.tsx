@@ -1,6 +1,7 @@
 import { Volume2, Bell, HelpCircle, Lock, LogOut, ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState, useEffect } from 'react';
+import { Card } from '../components/ui/Card';
 
 interface SettingsProps {
   onLogout: () => void;
@@ -38,7 +39,7 @@ export default function Settings({ onLogout, onNavigate, userName = 'Estudante',
         <p className="text-on-surface-variant">Personalize sua experiência de aprendizado</p>
       </motion.section>
 
-      <div className="bg-white p-6 rounded-lg mb-8 flex items-center shadow-[0_12px_32px_rgba(0,46,82,0.06)] gap-4">
+      <Card className="mb-8 flex items-center gap-4">
         <div className="relative">
           {avatarUrl ? (
             <img className="w-16 h-16 rounded-full object-cover border-2 border-primary-container" src={avatarUrl} alt="Avatar" />
@@ -54,10 +55,10 @@ export default function Settings({ onLogout, onNavigate, userName = 'Estudante',
         <div>
           <h3 className="text-xl font-bold text-on-surface">{userName}</h3>
         </div>
-      </div>
+      </Card>
 
       <div className="space-y-4">
-        <div className="bg-white p-2 rounded-lg shadow-[0_12px_32px_rgba(0,46,82,0.06)]">
+        <Card padding="sm">
           <div className="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors rounded-lg group">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
@@ -83,9 +84,9 @@ export default function Settings({ onLogout, onNavigate, userName = 'Estudante',
               <div className="w-11 h-6 bg-black peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
             </label>
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-white p-2 rounded-lg shadow-[0_12px_32px_rgba(0,46,82,0.06)]">
+        <Card padding="sm">
           <button onClick={() => onNavigate('help')} className="w-full flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors rounded-lg">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
@@ -104,9 +105,9 @@ export default function Settings({ onLogout, onNavigate, userName = 'Estudante',
             </div>
             <ChevronRight className="w-5 h-5 text-outline" />
           </button>
-        </div>
+        </Card>
 
-        <div className="bg-white p-2 rounded-lg shadow-[0_12px_32px_rgba(0,46,82,0.06)]">
+        <Card padding="sm">
           <button 
             id="logout-button"
             data-testid="logout-button"
@@ -118,7 +119,7 @@ export default function Settings({ onLogout, onNavigate, userName = 'Estudante',
             </div>
             <span className="font-bold text-error">Sair</span>
           </button>
-        </div>
+        </Card>
       </div>
 
       <div className="mt-12 text-center">
