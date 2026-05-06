@@ -32,12 +32,12 @@ export default function Privacy({ onBack }: { onBack: () => void }) {
       
       if (session) {
         try {
-          await fetchWithAuth('/users/me', {
-            method: 'DELETE'
-          });
+          // Chama a função direto no Supabase, ignorando o backend Express!
+          const { error } = await supabase.rpc('delete_user');
+          if (error) throw error;
         } catch (e: any) {
-          console.warn('Backend deletion failed:', e);
-          alert(`Aviso: A exclusão falhou. Detalhe do erro: ${e.message}\n\nPara deletar permanentemente, o servidor precisa estar online e configurado corretamente.`);
+          console.warn('Supabase deletion failed:', e);
+          alert(`Aviso: A exclusão falhou. Detalhe do erro: ${e.message}`);
           return; // Aborta para não limpar o cache/sessão sem deletar a conta real
         }
       }
