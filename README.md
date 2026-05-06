@@ -1,6 +1,6 @@
 Olá Devs!
 
-O projeto Saber Mais é um projeto feito por unversitários da Ânima Hub para contribuir com a comunidade através da gamificação do aprendizado.
+O projeto Saber Mais é um projeto feito por universitários da Ânima Hub para contribuir com a comunidade através da gamificação do aprendizado.
 
 ## Rode localmente
 **Pré-requisitos:**  Node.js
