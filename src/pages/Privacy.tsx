@@ -35,9 +35,9 @@ export default function Privacy({ onBack }: { onBack: () => void }) {
           await fetchWithAuth('/users/me', {
             method: 'DELETE'
           });
-        } catch (e) {
+        } catch (e: any) {
           console.warn('Backend deletion failed:', e);
-          alert('Aviso: Como o servidor backend não pôde ser acessado, a exclusão falhou. Para deletar permanentemente, o servidor precisa estar online.');
+          alert(`Aviso: A exclusão falhou. Detalhe do erro: ${e.message}\n\nPara deletar permanentemente, o servidor precisa estar online e configurado corretamente.`);
           return; // Aborta para não limpar o cache/sessão sem deletar a conta real
         }
       }

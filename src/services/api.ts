@@ -33,5 +33,9 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
     throw new Error(errorData.error || `Erro da API: ${response.status}`);
   }
 
+  if (response.status === 204) {
+    return null;
+  }
+
   return response.json();
 }
